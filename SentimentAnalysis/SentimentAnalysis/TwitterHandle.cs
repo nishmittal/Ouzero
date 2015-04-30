@@ -15,6 +15,7 @@ namespace SentimentAnalysis
         public int Followers { get; set; }
         public int Retweets { get; set; }
         public int Score { get; set; }
+        public int Favourites { get; set; }
 
         public TwitterHandle (string Name)
         {
