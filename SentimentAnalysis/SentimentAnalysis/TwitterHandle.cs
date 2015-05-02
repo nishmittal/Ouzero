@@ -17,6 +17,8 @@ namespace SentimentAnalysis
         public int Score { get; set; }
         public int Favourites { get; set; }
 
+        public int Friends { get; set; }
+
         public TwitterHandle (string Name)
         {
             this.Name = Name;
