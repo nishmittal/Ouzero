@@ -19,6 +19,7 @@ namespace SentimentAnalysis
         {
             var prg = new Program();
             prg.Go();
+            Console.ReadLine();
         }
 
         public Program()
@@ -31,56 +32,8 @@ namespace SentimentAnalysis
 
         private void Go()
         {
+            TwitterDataSourcer tds = new TwitterDataSourcer( Handles );
             
-            foreach (TwitterHandle h in Handles)
-            {
-                var user = User.GetUserFromScreenName(h.Name);
-                h.Followers = user.FollowersCount;
-                h.Friends = user.FriendsCount;
-                h.Retweets = 0;
-                var score = ComputeScore(h);
-                h.Score = score;
-            }
-        }
-
-        /// <summary>
-        /// Stubbed.
-        /// </summary>
-        /// <param name="h"></param>
-        /// <returns></returns>
-        private int ComputeScore(TwitterHandle h)
-        {
-            return 80;
-        }
-
-        /// <summary>
-        /// Stubbed.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        private int GetFavourites(string name)
-        {
-            return 50;
-        }
-
-        /// <summary>
-        /// Stubbed.
-        /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
-        private int GetRetweets(string p)
-        {
-            return 100;
-        }
-
-        /// <summary>
-        /// Stubbed.
-        /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
-        private int GetFollowers(string p)
-        {
-            return 10;
         }
     }
 }

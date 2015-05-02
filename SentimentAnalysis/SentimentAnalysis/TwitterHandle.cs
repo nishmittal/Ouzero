@@ -11,15 +11,36 @@ namespace SentimentAnalysis
     /// </summary>
     class TwitterHandle
     {
+        /// <summary>
+        /// Twitter username.
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Number of followers.
+        /// </summary>
         public int Followers { get; set; }
-        public int Retweets { get; set; }
-        public int Score { get; set; }
-        public int Favourites { get; set; }
-
+        /// <summary>
+        /// Retweets per tweet.
+        /// </summary>
+        public int RetweetRate { get; set; }
+        /// <summary>
+        /// Favourites per tweet.
+        /// </summary>
+        public int FavouriteRate { get; set; }
+        /// <summary>
+        /// Number of friends.
+        /// </summary>
         public int Friends { get; set; }
+        /// <summary>
+        /// Ouzero score.
+        /// </summary>
+        public int Score { get; set; }
 
-        public TwitterHandle (string Name)
+        /// <summary>
+        /// Constructor for the TwitterHandle object.
+        /// </summary>
+        /// <param name="Name">Twitter username of the account represented by this object.</param>
+        public TwitterHandle( string Name )
         {
             this.Name = Name;
         }
