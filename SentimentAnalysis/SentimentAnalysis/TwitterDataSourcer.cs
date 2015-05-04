@@ -12,7 +12,7 @@ namespace SentimentAnalysis
     /// <summary>
     /// Twitter-oriented implementation of the <see cref="IDataSourcer"/>interface.
     /// </summary>
-    class TwitterDataSourcer : IDataSourcer
+    public class TwitterDataSourcer : IDataSourcer
     {
         private string AccessToken = "3226815046-jOHYCioNDa0m3oLoukS35xY6DLsWQHbQRETZoPq";
         private string AccessTokenSecret = "XKUWVQgKEe2wD0wmLeCF5senwKqPAfcQQZEX5XYtNLQRs";
@@ -31,27 +31,53 @@ namespace SentimentAnalysis
         {
             foreach ( TwitterHandle h in Handles )
             {
-                var user = User.GetUserFromScreenName( h.Name );
-                h.Followers = user.FollowersCount;
-                h.Friends = user.FriendsCount;
-                // for retweets per tweet, get list of tweets, then cycle through each one and sum up the number of retweets and then simply divide
+                //PopulateWithData( h );
 
-                h.RetweetRate = 0;
-                // for favourites per tweet, do the same as above.
-                h.FavouriteRate = 0;
-                h.Score = ComputeScore( h );
+                h.Score = ComputeScoreStatic( h );
             }
         }
 
-        private static int ComputeScore(TwitterHandle h)
+        public static TwitterHandle PopulateWithData(TwitterHandle h)
         {
-            // score = (retweets x favourites)^3 x (friends/followers)
-            var score = Math.Pow( h.RetweetRate * h.FavouriteRate, 3 ) * ( h.Friends / h.Followers );
-            return (int) score;
+            var user = User.GetUserFromScreenName( h.Name );
+            h.Followers = user.FollowersCount;
+            h.Friends = user.FriendsCount;
+            var numberOfTweets = 500;
+            var tweets = GetUserTimelineTweets( h.Name, numberOfTweets );
+
+            if ( tweets.Length != 500 ) // in case the account doesn't have the required amount
+            {
+                numberOfTweets = tweets.Length;
+            }
+
+            var totalRetweets = 0;
+            var totalFavourites = 0;
+
+            foreach ( ITweet t in tweets )
+            {
+                totalRetweets += t.RetweetCount;
+                totalFavourites += t.FavouriteCount;
+            }
+
+            h.RetweetRate = totalRetweets / numberOfTweets;
+            h.FavouriteRate = totalFavourites / numberOfTweets;
+
+            return h;
+        }
+
+        /// <summary>
+        /// Needs more work.
+        /// </summary>
+        /// <param name="h"></param>
+        /// <returns></returns>
+        public static double ComputeScoreStatic(TwitterHandle h)
+        {
+            var score = Math.Pow( h.RetweetRate, 2 ) + h.FavouriteRate + (h.Friends/100) + ( h.Followers / 1000 );
+            return score;
         }
 
         // TEST THIS! =)
-        private static ITweet[] GetUserTimelineTweets( string userName, int maxNumberOfTweets )
+        public static ITweet[] GetUserTimelineTweets( string userName, int maxNumberOfTweets )
         {
             var tweets = new List<ITweet>();
 
@@ -72,5 +98,11 @@ namespace SentimentAnalysis
             return tweets.Distinct().ToArray();
         }
 
+
+
+        public int ComputeScore( TwitterHandle h )
+        {
+            throw new NotImplementedException();
+        }
     }
 }

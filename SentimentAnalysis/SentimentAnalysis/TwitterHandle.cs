@@ -9,7 +9,7 @@ namespace SentimentAnalysis
     /// <summary>
     /// Represents a Twitter Handle for which we store data.
     /// </summary>
-    class TwitterHandle
+    public class TwitterHandle
     {
         /// <summary>
         /// Twitter username.
@@ -22,11 +22,11 @@ namespace SentimentAnalysis
         /// <summary>
         /// Retweets per tweet.
         /// </summary>
-        public int RetweetRate { get; set; }
+        public double RetweetRate { get; set; }
         /// <summary>
         /// Favourites per tweet.
         /// </summary>
-        public int FavouriteRate { get; set; }
+        public double FavouriteRate { get; set; }
         /// <summary>
         /// Number of friends.
         /// </summary>
@@ -34,7 +34,7 @@ namespace SentimentAnalysis
         /// <summary>
         /// Ouzero score.
         /// </summary>
-        public int Score { get; set; }
+        public double Score { get; set; }
 
         /// <summary>
         /// Constructor for the TwitterHandle object.

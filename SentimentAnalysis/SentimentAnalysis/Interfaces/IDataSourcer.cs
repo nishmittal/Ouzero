@@ -9,10 +9,10 @@ namespace SentimentAnalysis.Interfaces
     /// <summary>
     /// Interface for implementations which will source data from social media sites.
     /// </summary>
-    interface IDataSourcer
+    public interface IDataSourcer
     {
         void GetData();
 
-        int ComputeScore();
+        int ComputeScore(TwitterHandle h);
     }
 }

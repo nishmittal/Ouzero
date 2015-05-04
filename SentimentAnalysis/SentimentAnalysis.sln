@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SentimentAnalysis", "SentimentAnalysis\SentimentAnalysis.csproj", "{68EE930D-65E9-47CA-A889-2EA36CF8FC1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{8EA96256-EF53-44C3-8BBA-754973C657E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{68EE930D-65E9-47CA-A889-2EA36CF8FC1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68EE930D-65E9-47CA-A889-2EA36CF8FC1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68EE930D-65E9-47CA-A889-2EA36CF8FC1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EA96256-EF53-44C3-8BBA-754973C657E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EA96256-EF53-44C3-8BBA-754973C657E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EA96256-EF53-44C3-8BBA-754973C657E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EA96256-EF53-44C3-8BBA-754973C657E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
