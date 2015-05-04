@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tweetinvi;
 
 namespace SentimentAnalysis
 {
     class Program
     {
-        private IList<TwitterHandle> Handles;
-        private string AccessToken = "3226815046-jOHYCioNDa0m3oLoukS35xY6DLsWQHbQRETZoPq";
-        private string AccessTokenSecret = "XKUWVQgKEe2wD0wmLeCF5senwKqPAfcQQZEX5XYtNLQRs";
-        private string ConsumerKey = "nysITef21Ph7H5gb3mQaCBYXL";
-        private string ConsumerSecret = "x1ZAAXTxFeZcNN4yxQOC3sIESRTTtsJpwxKgsiBIcUnaGqH6Ap";
+        private IList<TwitterHandle> _handles;
+        private string _accessToken = "3226815046-jOHYCioNDa0m3oLoukS35xY6DLsWQHbQRETZoPq";
+        private string _accessTokenSecret = "XKUWVQgKEe2wD0wmLeCF5senwKqPAfcQQZEX5XYtNLQRs";
+        private string _consumerKey = "nysITef21Ph7H5gb3mQaCBYXL";
+        private string _consumerSecret = "x1ZAAXTxFeZcNN4yxQOC3sIESRTTtsJpwxKgsiBIcUnaGqH6Ap";
 
-        static void Main(string[] args)
+        static void Main()
         {
             var prg = new Program();
             prg.Go();
@@ -24,15 +20,15 @@ namespace SentimentAnalysis
 
         public Program()
         {
-            Handles = new List<TwitterHandle>();
-            Handles.Add(new TwitterHandle("@NetshockTech"));
-            Handles.Add(new TwitterHandle("@techcrunch"));
-            TwitterCredentials.SetCredentials(AccessToken, AccessTokenSecret, ConsumerKey, ConsumerSecret);
+            _handles = new List<TwitterHandle>();
+            _handles.Add(new TwitterHandle("@NetshockTech"));
+            _handles.Add(new TwitterHandle("@techcrunch"));
+            //TwitterCredentials.SetCredentials(AccessToken, AccessTokenSecret, ConsumerKey, ConsumerSecret);
         }
 
         private void Go()
         {
-            TwitterDataSourcer tds = new TwitterDataSourcer( Handles );
+            TwitterDataSourcer tds = new TwitterDataSourcer( _handles );
             
         }
     }

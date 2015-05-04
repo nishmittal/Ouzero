@@ -1,9 +1,7 @@
-﻿using SentimentAnalysis.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SentimentAnalysis.Interfaces;
 using Tweetinvi;
 using Tweetinvi.Core.Interfaces;
 
@@ -14,17 +12,17 @@ namespace SentimentAnalysis
     /// </summary>
     public class TwitterDataSourcer : IDataSourcer
     {
-        private string AccessToken = "3226815046-jOHYCioNDa0m3oLoukS35xY6DLsWQHbQRETZoPq";
-        private string AccessTokenSecret = "XKUWVQgKEe2wD0wmLeCF5senwKqPAfcQQZEX5XYtNLQRs";
-        private string ConsumerKey = "nysITef21Ph7H5gb3mQaCBYXL";
-        private string ConsumerSecret = "x1ZAAXTxFeZcNN4yxQOC3sIESRTTtsJpwxKgsiBIcUnaGqH6Ap";
+        private string _accessToken = "3226815046-jOHYCioNDa0m3oLoukS35xY6DLsWQHbQRETZoPq";
+        private string _accessTokenSecret = "XKUWVQgKEe2wD0wmLeCF5senwKqPAfcQQZEX5XYtNLQRs";
+        private string _consumerKey = "nysITef21Ph7H5gb3mQaCBYXL";
+        private string _consumerSecret = "x1ZAAXTxFeZcNN4yxQOC3sIESRTTtsJpwxKgsiBIcUnaGqH6Ap";
 
         public IList<TwitterHandle> Handles { get; set; }
 
         public TwitterDataSourcer(IList<TwitterHandle> handles)
         {
-            this.Handles = handles;
-            TwitterCredentials.SetCredentials( AccessToken, AccessTokenSecret, ConsumerKey, ConsumerSecret );
+            Handles = handles;
+            TwitterCredentials.SetCredentials( _accessToken, _accessTokenSecret, _consumerKey, _consumerSecret );
         }
 
         public void GetData()
@@ -72,7 +70,7 @@ namespace SentimentAnalysis
         /// <returns></returns>
         public static double ComputeScoreStatic(TwitterHandle h)
         {
-            var score = Math.Pow( h.RetweetRate, 2 ) + h.FavouriteRate + (h.Friends/100) + ( h.Followers / 1000 );
+            var score = Math.Pow( h.RetweetRate, 2 ) + h.FavouriteRate + h.Friends/100 + ( h.Followers / 1000 );
             return score;
         }
 
@@ -102,7 +100,7 @@ namespace SentimentAnalysis
 
         public int ComputeScore( TwitterHandle h )
         {
-            throw new NotImplementedException();
+            return 0;
         }
     }
 }

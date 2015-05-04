@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SentimentAnalysis
+﻿namespace SentimentAnalysis
 {
     /// <summary>
     /// Represents a Twitter Handle for which we store data.
@@ -39,10 +33,10 @@ namespace SentimentAnalysis
         /// <summary>
         /// Constructor for the TwitterHandle object.
         /// </summary>
-        /// <param name="Name">Twitter username of the account represented by this object.</param>
-        public TwitterHandle( string Name )
+        /// <param name="name">Twitter username of the account represented by this object.</param>
+        public TwitterHandle( string name )
         {
-            this.Name = Name;
+            Name = name;
         }
     }
 }

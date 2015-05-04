@@ -1,10 +1,7 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SentimentAnalysis.Interfaces;
 using SentimentAnalysis;
-using System.Collections.Generic;
 using Tweetinvi.Core.Interfaces;
-using Tweetinvi;
 
 namespace UnitTest
 {
@@ -15,13 +12,9 @@ namespace UnitTest
         [TestMethod]
         public void TestMethod1()
         {
-            IDataSourcer tds;
-            IList<TwitterHandle> Handles;
-
-            Handles = new List<TwitterHandle>();
+            IList<TwitterHandle> handles = new List<TwitterHandle>();
             TwitterHandle h = new TwitterHandle( "@katyperry" );
-            Handles.Add( h );
-            tds = new TwitterDataSourcer( Handles );
+            handles.Add( h );
             h = TwitterDataSourcer.PopulateWithData( h );
             var numberOfTweets = 200;
             var tweets = TwitterDataSourcer.GetUserTimelineTweets( h.Name, numberOfTweets );
