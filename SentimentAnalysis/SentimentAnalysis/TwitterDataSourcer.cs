@@ -12,34 +12,49 @@ namespace SentimentAnalysis
     /// </summary>
     public class TwitterDataSourcer : IDataSourcer
     {
-        private string _accessToken = "3226815046-jOHYCioNDa0m3oLoukS35xY6DLsWQHbQRETZoPq";
-        private string _accessTokenSecret = "XKUWVQgKEe2wD0wmLeCF5senwKqPAfcQQZEX5XYtNLQRs";
-        private string _consumerKey = "nysITef21Ph7H5gb3mQaCBYXL";
-        private string _consumerSecret = "x1ZAAXTxFeZcNN4yxQOC3sIESRTTtsJpwxKgsiBIcUnaGqH6Ap";
+        private static string _accessToken = "3226815046-jOHYCioNDa0m3oLoukS35xY6DLsWQHbQRETZoPq";
+        private static string _accessTokenSecret = "XKUWVQgKEe2wD0wmLeCF5senwKqPAfcQQZEX5XYtNLQRs";
+        private static string _consumerKey = "nysITef21Ph7H5gb3mQaCBYXL";
+        private static string _consumerSecret = "x1ZAAXTxFeZcNN4yxQOC3sIESRTTtsJpwxKgsiBIcUnaGqH6Ap";
 
         public IList<TwitterHandle> Handles { get; set; }
 
-        public TwitterDataSourcer(IList<TwitterHandle> handles)
+        public TwitterDataSourcer( IList<TwitterHandle> handles )
         {
             Handles = handles;
             TwitterCredentials.SetCredentials( _accessToken, _accessTokenSecret, _consumerKey, _consumerSecret );
         }
 
-        public void GetData()
-        {
-            foreach ( TwitterHandle h in Handles )
-            {
-                //PopulateWithData( h );
 
-                h.Score = ComputeScoreStatic( h );
-            }
+        public static void SetCredentials()
+        {
+            TwitterCredentials.SetCredentials( _accessToken, _accessTokenSecret, _consumerKey, _consumerSecret );
         }
 
-        public static TwitterHandle PopulateWithData(TwitterHandle h)
+        public static IUser GetUser( string name )
         {
-            var user = User.GetUserFromScreenName( h.Name );
-            h.Followers = user.FollowersCount;
-            h.Friends = user.FriendsCount;
+            return User.GetUserFromScreenName( name );
+        }
+
+        public static ITweetList[] GetUserSubscribedLists( IUser user )
+        {
+            var tweetLists = TweetList.GetUserLists( user, false );
+            return tweetLists.ToArray();
+        }
+
+        public static IUser[] GetUsersInList( ITweetList list )
+        {
+            return list.GetMembers( 10000 ).ToArray();
+        }
+
+        public TwitterHandle GetPopulatedHandleFromUser( IUser user )
+        {
+            var h = new TwitterHandle( user.Name )
+            {
+                Followers = user.FollowersCount,
+                Friends = user.FriendsCount
+            };
+
             var numberOfTweets = 500;
             var tweets = GetUserTimelineTweets( h.Name, numberOfTweets );
 
@@ -51,7 +66,7 @@ namespace SentimentAnalysis
             var totalRetweets = 0;
             var totalFavourites = 0;
 
-            foreach ( ITweet t in tweets )
+            foreach ( var t in tweets )
             {
                 totalRetweets += t.RetweetCount;
                 totalFavourites += t.FavouriteCount;
@@ -68,13 +83,12 @@ namespace SentimentAnalysis
         /// </summary>
         /// <param name="h"></param>
         /// <returns></returns>
-        public static double ComputeScoreStatic(TwitterHandle h)
+        public static double ComputeScoreStatic( TwitterHandle h )
         {
-            var score = Math.Pow( h.RetweetRate, 2 ) + h.FavouriteRate + h.Friends/100 + ( h.Followers / 1000 );
+            var score = Math.Pow( h.RetweetRate, 2 ) + h.FavouriteRate + h.Friends / 100 + ( h.Followers / 1000 );
             return score;
         }
 
-        // TEST THIS! =)
         public static ITweet[] GetUserTimelineTweets( string userName, int maxNumberOfTweets )
         {
             var tweets = new List<ITweet>();
@@ -96,11 +110,5 @@ namespace SentimentAnalysis
             return tweets.Distinct().ToArray();
         }
 
-
-
-        public int ComputeScore( TwitterHandle h )
-        {
-            return 0;
-        }
     }
 }

@@ -5,8 +5,5 @@
     /// </summary>
     public interface IDataSourcer
     {
-        void GetData();
-
-        int ComputeScore(TwitterHandle h);
     }
 }
