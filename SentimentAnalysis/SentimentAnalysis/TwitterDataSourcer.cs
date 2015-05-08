@@ -19,6 +19,10 @@ namespace SentimentAnalysis
 
         public IList<TwitterHandle> Handles { get; set; }
 
+        /// <summary>
+        /// Stores a copy of the handles supplied and sets the credentials for use.
+        /// </summary>
+        /// <param name="handles"></param>
         public TwitterDataSourcer( IList<TwitterHandle> handles )
         {
             Handles = handles;
@@ -29,6 +33,30 @@ namespace SentimentAnalysis
         public static void SetCredentials()
         {
             TwitterCredentials.SetCredentials( _accessToken, _accessTokenSecret, _consumerKey, _consumerSecret );
+        }
+
+        public static List<TwitterHandle> GetScoredHandlesFromUserLists( string name )
+        {
+            var scoredHandles = new List<TwitterHandle>();
+
+            var ouzero = new TwitterHandle( name );
+            var ouzeroUser = GetUser( ouzero.Name );
+            var userLists = GetUserSubscribedLists( ouzeroUser );
+
+            foreach ( var tweetList in userLists )
+            {
+                var usersInList = GetUsersInList( tweetList );
+                foreach ( var user in usersInList )
+                {
+                    var populatedHandle = GetPopulatedHandleFromUser( user );
+                    if ( populatedHandle.Name != "invisible" )
+                    {
+                        scoredHandles.Add( populatedHandle );
+                    }
+                }
+            }
+
+            return scoredHandles;
         }
 
         public static IUser GetUser( string name )
@@ -47,19 +75,32 @@ namespace SentimentAnalysis
             return list.GetMembers( 10000 ).ToArray();
         }
 
-        public TwitterHandle GetPopulatedHandleFromUser( IUser user )
+        public static TwitterHandle GetPopulatedHandleFromUser( IUser user )
         {
-            var h = new TwitterHandle( user.Name )
+            var h = new TwitterHandle( user.ScreenName)
             {
                 Followers = user.FollowersCount,
                 Friends = user.FriendsCount
             };
 
-            var numberOfTweets = 500;
-            var tweets = GetUserTimelineTweets( h.Name, numberOfTweets );
+            var numberOfTweets = 200;
+
+            ITweet[] tweets;
+            try
+            {
+                tweets = GetUserTimelineTweets( h.Name, numberOfTweets );
+            }
+            catch ( Exception ) //something went wrong
+            {
+                return GetInvisibleUser();
+            }
 
             if ( tweets.Length != 500 ) // in case the account doesn't have the required amount
             {
+                if ( tweets.Length == 0 )
+                {
+                    return GetInvisibleUser();
+                }
                 numberOfTweets = tweets.Length;
             }
 
@@ -72,10 +113,17 @@ namespace SentimentAnalysis
                 totalFavourites += t.FavouriteCount;
             }
 
-            h.RetweetRate = totalRetweets / numberOfTweets;
-            h.FavouriteRate = totalFavourites / numberOfTweets;
+            h.RetweetRate = (totalRetweets / numberOfTweets) + 1;
+            h.FavouriteRate = (totalFavourites / numberOfTweets) + 1;
+
+            h.Score = ComputeScoreStatic( h );
 
             return h;
+        }
+
+        private static TwitterHandle GetInvisibleUser()
+        {
+            return new TwitterHandle("invisible");
         }
 
         /// <summary>
@@ -91,23 +139,18 @@ namespace SentimentAnalysis
 
         public static ITweet[] GetUserTimelineTweets( string userName, int maxNumberOfTweets )
         {
-            var tweets = new List<ITweet>();
 
-            var receivedTweets = Timeline.GetUserTimeline( userName, 200 ).ToArray();
-            tweets.AddRange( receivedTweets );
+            var user = User.GetUserFromScreenName( userName );
+            var tweets1 = Timeline.GetUserTimeline( user, 200 );
 
-            while ( tweets.Count < maxNumberOfTweets && receivedTweets.Length == 200 )
-            {
-                var oldestTweet = tweets.Min( x => x.Id );
-                var userTimelineParameter = Timeline.CreateUserTimelineRequestParameter( userName );
-                userTimelineParameter.MaxId = oldestTweet;
-                userTimelineParameter.MaximumNumberOfTweetsToRetrieve = 200;
+            //var requestParameter = Timeline.CreateUserTimelineRequestParameter( user );
+            //requestParameter.MaxId = tweets1.Min( x => x.Id ) - 1;
+            //requestParameter.MaximumNumberOfTweetsToRetrieve = 200;
+            //var tweets2 = Timeline.GetUserTimeline( requestParameter );
 
-                receivedTweets = Timeline.GetUserTimeline( userTimelineParameter ).ToArray();
-                tweets.AddRange( receivedTweets );
-            }
+            //var tweets = tweets1.Concat( tweets2 );
 
-            return tweets.Distinct().ToArray();
+            return tweets1.ToArray();
         }
 
     }

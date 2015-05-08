@@ -8,13 +8,10 @@ namespace UnitTest
     [TestClass]
     public class TwitterDataSourcerUnitTest
     {
-        private TwitterDataSourcer tds;
-        private IList<TwitterHandle> Handles;
         [TestInitialize]
         public void Setup()
         {
-            Handles = new List<TwitterHandle> {new TwitterHandle("@Ouzer0")};
-            tds = new TwitterDataSourcer(Handles);
+            TwitterDataSourcer.SetCredentials();
         }
 
         //TODO Need to write these tests
@@ -59,6 +56,20 @@ namespace UnitTest
         public void ShouldGetCorrectNumberOfTweetsFromUser()
         {
 
+        }
+
+        [TestMethod]
+        public void ShouldGetMyScoredHandles()
+        {
+            TwitterDataSourcer.SetCredentials();
+            var scoredHandles = TwitterDataSourcer.GetScoredHandlesFromUserLists( "Ouzer0" );
+            // Write sample data to CSV file
+            using ( var writer = new CsvFileWriter( "C:/Users/Nishant/Desktop/Dropbox/Docs/scores.csv" ) )
+                foreach ( var h in scoredHandles )
+                {
+                    var row = new CsvRow { h.Name, h.Followers.ToString(), ( (int) h.RetweetRate ).ToString(), ( (int) h.FavouriteRate ).ToString(), h.Friends.ToString(), h.Category, ( (int) h.Score ).ToString() };
+                    writer.WriteRow( row );
+                }
         }
 
     }

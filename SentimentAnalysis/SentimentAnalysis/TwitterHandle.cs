@@ -29,6 +29,10 @@
         /// Ouzero score.
         /// </summary>
         public double Score { get; set; }
+        /// <summary>
+        /// Category of user. (e.g. tech, food, cars)
+        /// </summary>
+        public string Category { get; set; }
 
         /// <summary>
         /// Constructor for the TwitterHandle object.
@@ -37,6 +41,7 @@
         public TwitterHandle( string name )
         {
             Name = name;
+            Category = "unsorted";
         }
     }
 }

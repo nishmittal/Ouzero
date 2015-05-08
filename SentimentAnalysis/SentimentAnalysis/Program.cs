@@ -9,22 +9,26 @@ namespace SentimentAnalysis
 
         static void Main()
         {
-            var prg = new Program();
-            prg.Go();
+            Go();
             Console.ReadLine();
         }
 
         public Program()
         {
-            _handles = new List<TwitterHandle>();
-            _handles.Add(new TwitterHandle("@NetshockTech"));
-            _handles.Add(new TwitterHandle("@techcrunch"));
+            _handles = new List<TwitterHandle> { new TwitterHandle( "@Ouzer0" ) };
         }
 
-        private void Go()
+        private static void Go()
         {
-            //TwitterDataSourcer tds = new TwitterDataSourcer( _handles );
-            
+            TwitterDataSourcer.SetCredentials();
+            var scoredHandles = TwitterDataSourcer.GetScoredHandlesFromUserLists( "Ouzer0" );
+            // Write sample data to CSV file
+            using ( var writer = new CsvFileWriter( "C:/Users/Nishant/Desktop/Dropbox/Docs/scores.csv" ) )
+                foreach ( var h in scoredHandles )
+                {
+                    var row = new CsvRow { h.Name, h.Followers.ToString(), ( (int) h.RetweetRate ).ToString(), ( (int) h.FavouriteRate ).ToString(), h.Friends.ToString(), h.Category, ( (int) h.Score ).ToString() };
+                    writer.WriteRow( row );
+                }
         }
     }
 }
