@@ -18,6 +18,7 @@ namespace SentimentAnalysis
         private static string _consumerSecret = "x1ZAAXTxFeZcNN4yxQOC3sIESRTTtsJpwxKgsiBIcUnaGqH6Ap";
 
         public IList<TwitterHandle> Handles { get; set; }
+        public static IList<TwitterHandle> MissingHandles = new List<TwitterHandle>();
 
         /// <summary>
         /// Stores a copy of the handles supplied and sets the credentials for use.
@@ -45,14 +46,28 @@ namespace SentimentAnalysis
 
             foreach ( var tweetList in userLists )
             {
-                var usersInList = GetUsersInList( tweetList );
-                foreach ( var user in usersInList )
+                scoredHandles.AddRange( GetScoredHandlesFromUserList( tweetList.Slug, tweetList.Creator.ScreenName ) );
+            }
+
+            return scoredHandles;
+        }
+
+        public static List<TwitterHandle> GetScoredHandlesFromUserList( string listName, string listCreator )
+        {
+            var tweetList = TweetList.GetExistingList( listName, listCreator );
+            var scoredHandles = new List<TwitterHandle>();
+            var usersInList = GetUsersInList( tweetList );
+
+            foreach ( var user in usersInList )
+            {
+                var populatedHandle = GetPopulatedHandleFromUser( user );
+                if ( populatedHandle.Name.StartsWith( "Problem" ) )
                 {
-                    var populatedHandle = GetPopulatedHandleFromUser( user );
-                    if ( populatedHandle.Name != "invisible" )
-                    {
-                        scoredHandles.Add( populatedHandle );
-                    }
+                    MissingHandles.Add( new TwitterHandle( user.ScreenName ) );
+                }
+                else
+                {
+                    scoredHandles.Add( populatedHandle );
                 }
             }
 
@@ -77,10 +92,13 @@ namespace SentimentAnalysis
 
         public static TwitterHandle GetPopulatedHandleFromUser( IUser user )
         {
-            var h = new TwitterHandle( user.ScreenName)
+            var h = new TwitterHandle( user.ScreenName )
             {
                 Followers = user.FollowersCount,
-                Friends = user.FriendsCount
+                Friends = user.FriendsCount,
+                Bio = (user.Description).Replace("\r\n", " "),
+                Location = user.Location,
+                ImgUrl = user.ProfileImageUrl
             };
 
             var numberOfTweets = 200;
@@ -88,11 +106,11 @@ namespace SentimentAnalysis
             ITweet[] tweets;
             try
             {
-                tweets = GetUserTimelineTweets( h.Name, numberOfTweets );
+                tweets = GetUserTimelineTweets( user, numberOfTweets );
             }
-            catch ( Exception ) //something went wrong
+            catch ( Exception e) //something went wrong
             {
-                return GetInvisibleUser();
+                return new TwitterHandle( "Problem: " + e.Message );
             }
 
             if ( tweets.Length != 500 ) // in case the account doesn't have the required amount
@@ -109,12 +127,13 @@ namespace SentimentAnalysis
 
             foreach ( var t in tweets )
             {
-                totalRetweets += t.RetweetCount;
+                if ( !t.IsRetweet )
+                    totalRetweets += t.RetweetCount;
                 totalFavourites += t.FavouriteCount;
             }
 
-            h.RetweetRate = (totalRetweets / numberOfTweets) + 1;
-            h.FavouriteRate = (totalFavourites / numberOfTweets) + 1;
+            h.RetweetRate = ( totalRetweets / numberOfTweets ) + 1;
+            h.FavouriteRate = ( totalFavourites / numberOfTweets ) + 1;
 
             h.Score = ComputeScoreStatic( h );
 
@@ -123,7 +142,7 @@ namespace SentimentAnalysis
 
         private static TwitterHandle GetInvisibleUser()
         {
-            return new TwitterHandle("invisible");
+            return new TwitterHandle( "invisible" );
         }
 
         /// <summary>
@@ -137,20 +156,47 @@ namespace SentimentAnalysis
             return score;
         }
 
-        public static ITweet[] GetUserTimelineTweets( string userName, int maxNumberOfTweets )
+        /// <summary>
+        /// Gets a number of tweets up to the maximum specified for a given user. Excludes retweets of other users.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="maxNumberOfTweets"></param>
+        /// <returns></returns>
+        public static ITweet[] GetUserTimelineTweets( IUser user, int maxNumberOfTweets )
         {
+            var tweets = new List<ITweet>();
 
-            var user = User.GetUserFromScreenName( userName );
-            var tweets1 = Timeline.GetUserTimeline( user, 200 );
+            var userTimelineParameter = Timeline.CreateUserTimelineRequestParameter( user );
+            userTimelineParameter.IncludeRTS = false;
+            userTimelineParameter.MaximumNumberOfTweetsToRetrieve = maxNumberOfTweets;
+            var receivedTweets = Timeline.GetUserTimeline( userTimelineParameter ).ToArray();
 
-            //var requestParameter = Timeline.CreateUserTimelineRequestParameter( user );
-            //requestParameter.MaxId = tweets1.Min( x => x.Id ) - 1;
-            //requestParameter.MaximumNumberOfTweetsToRetrieve = 200;
-            //var tweets2 = Timeline.GetUserTimeline( requestParameter );
+            tweets.AddRange( receivedTweets );
 
-            //var tweets = tweets1.Concat( tweets2 );
+            while ( tweets.Count < maxNumberOfTweets && receivedTweets.Length == 200 )
+            {
+                var oldestTweet = tweets.Min( x => x.Id );
+                userTimelineParameter.MaxId = oldestTweet;
+                userTimelineParameter.MaximumNumberOfTweetsToRetrieve = 200;
 
-            return tweets1.ToArray();
+                receivedTweets = Timeline.GetUserTimeline( userTimelineParameter ).ToArray();
+                tweets.AddRange( receivedTweets );
+            }
+
+            ITweet[] ret;
+
+            try
+            {
+
+                ret = tweets.Distinct().ToArray();
+            }
+            catch (Exception e)
+            {
+                var test = e.Message;
+                throw e;
+            }
+
+            return ret;
         }
 
     }

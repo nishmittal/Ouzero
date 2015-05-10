@@ -34,6 +34,11 @@
         /// </summary>
         public string Category { get; set; }
 
+        public string Bio { get; set; }
+        public string ImgUrl { get; set; }
+        public string Location { get; set; }
+
+
         /// <summary>
         /// Constructor for the TwitterHandle object.
         /// </summary>
