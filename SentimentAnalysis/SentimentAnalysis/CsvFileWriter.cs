@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -38,10 +39,19 @@ namespace SentimentAnalysis
                     builder.Append( ',' );
                 // Implement special handling for values that contain comma or quote
                 // Enclose in quotes and double up any double quotes
-                if ( value.IndexOfAny( new[] { '"', ',' } ) != -1 )
-                    builder.AppendFormat( "\"{0}\"", value.Replace( "\"", "\"\"" ) );
-                else
-                    builder.Append( value );
+                try
+                {
+
+                    if (value.IndexOfAny(new[] {'"', ','}) != -1)
+                        builder.AppendFormat("\"{0}\"", value.Replace("\"", "\"\""));
+                    else
+                        builder.Append(value);
+                }
+                catch (Exception e)
+                {
+                    var reason = e.Message;
+                }
+
                 firstColumn = false;
             }
             row.LineText = builder.ToString();

@@ -70,12 +70,15 @@ namespace UnitTest
         public void ShouldGetMyScoredHandles()
         {
             TwitterDataSourcer.SetCredentials();
-            var scoredHandles = TwitterDataSourcer.GetScoredHandlesFromUserList( "tech-news-brands", "Scobleizer" );
+            var creator = "Scobleizer";
+            var listName = "most-influential-in-tech";
+            var category = "Tech";
+            var scoredHandles = TwitterDataSourcer.GetScoredHandlesFromUserList( listName, creator );
             // Write sample data to CSV file
             using ( var writer = new CsvFileWriter( "C:/Users/Nishant/Desktop/Dropbox/Ouzero/tech.csv" ) )
                 foreach ( var h in scoredHandles )
                 {
-                    var row = new CsvRow { h.Name, h.Followers.ToString(), ( (int) h.RetweetRate ).ToString(), ( (int) h.FavouriteRate ).ToString(), h.Friends.ToString(), "Tech", ( (int) h.Score ).ToString(), h.ImgUrl, h.Bio, h.Location };
+                    var row = new CsvRow { h.Name, h.Followers.ToString(), ( (int) h.RetweetRate ).ToString(), ( (int) h.FavouriteRate ).ToString(), h.Friends.ToString(), category, ( (int) h.Score ).ToString(), h.Bio, h.Location };
                     writer.WriteRow( row );
                 }
 

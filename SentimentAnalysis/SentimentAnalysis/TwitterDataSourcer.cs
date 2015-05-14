@@ -61,7 +61,7 @@ namespace SentimentAnalysis
             foreach ( var user in usersInList )
             {
                 var populatedHandle = GetPopulatedHandleFromUser( user );
-                if ( populatedHandle.Name.StartsWith( "Problem" ) )
+                if ( populatedHandle.Name.StartsWith( "invisible" ) )
                 {
                     MissingHandles.Add( new TwitterHandle( user.ScreenName ) );
                 }
@@ -90,16 +90,32 @@ namespace SentimentAnalysis
             return list.GetMembers( 10000 ).ToArray();
         }
 
+        private static string GetLocation(IUser user)
+        {
+            var loc = user.Location;
+            return loc.Equals(string.Empty) ? "unspecified" : loc;
+        }
+
+        private static string GetBio(IUser user)
+        {
+            var bio = user.Description;
+            return bio.Equals(string.Empty) ? "unspecified" : bio;
+        }
+
         public static TwitterHandle GetPopulatedHandleFromUser( IUser user )
         {
             var h = new TwitterHandle( user.ScreenName )
             {
                 Followers = user.FollowersCount,
                 Friends = user.FriendsCount,
-                Bio = (user.Description).Replace("\r\n", " "),
-                Location = user.Location,
-                ImgUrl = user.ProfileImageUrl
+                Location = GetLocation(user),
             };
+
+            var desc = GetBio(user);
+            desc = desc.Replace("\r\n", " ");
+            desc = desc.Replace( "\n", " " );
+            desc = desc.Replace("\r", " ");
+            h.Bio = desc;
 
             var numberOfTweets = 200;
 
@@ -110,7 +126,7 @@ namespace SentimentAnalysis
             }
             catch ( Exception e) //something went wrong
             {
-                return new TwitterHandle( "Problem: " + e.Message );
+                return GetInvisibleUser();
             }
 
             if ( tweets.Length != 500 ) // in case the account doesn't have the required amount
@@ -142,7 +158,11 @@ namespace SentimentAnalysis
 
         private static TwitterHandle GetInvisibleUser()
         {
-            return new TwitterHandle( "invisible" );
+            var t = new TwitterHandle("invisible");
+            t.Bio = "";
+            t.Location = "";
+            t.ImgUrl = "";
+            return t;
         }
 
         /// <summary>
@@ -183,20 +203,7 @@ namespace SentimentAnalysis
                 tweets.AddRange( receivedTweets );
             }
 
-            ITweet[] ret;
-
-            try
-            {
-
-                ret = tweets.Distinct().ToArray();
-            }
-            catch (Exception e)
-            {
-                var test = e.Message;
-                throw e;
-            }
-
-            return ret;
+            return tweets.Distinct().ToArray();
         }
 
     }
