@@ -55,10 +55,15 @@ namespace SentimentAnalysis
         public static List<TwitterHandle> GetScoredHandlesFromUserList( string listName, string listCreator )
         {
             var tweetList = TweetList.GetExistingList( listName, listCreator );
-            var scoredHandles = new List<TwitterHandle>();
             var usersInList = GetUsersInList( tweetList );
 
-            foreach ( var user in usersInList )
+            return GetScoredHandlesFromUsers(usersInList);
+        }
+
+        private static List<TwitterHandle> GetScoredHandlesFromUsers(IEnumerable<IUser> users)
+        {
+            var scoredHandles = new List<TwitterHandle>();
+            foreach ( var user in users )
             {
                 var populatedHandle = GetPopulatedHandleFromUser( user );
                 if ( populatedHandle.Name.StartsWith( "invisible" ) )
@@ -74,6 +79,13 @@ namespace SentimentAnalysis
             return scoredHandles;
         }
 
+        public static List<TwitterHandle> GetScoredHandlesFromUsernames(List<string> usernames )
+        {
+            var userList = usernames.Select(GetUser).ToList();
+
+            return GetScoredHandlesFromUsers(userList);
+        }
+
         public static IUser GetUser( string name )
         {
             return User.GetUserFromScreenName( name );
@@ -85,9 +97,9 @@ namespace SentimentAnalysis
             return tweetLists.ToArray();
         }
 
-        public static IUser[] GetUsersInList( ITweetList list )
+        public static IEnumerable<IUser> GetUsersInList( ITweetList list )
         {
-            return list.GetMembers( 10000 ).ToArray();
+            return list.GetMembers( 10000 );
         }
 
         private static string GetLocation(IUser user)

@@ -105,6 +105,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CsvFileReader.cs" />
     <Compile Include="CsvFileWriter.cs" />
     <Compile Include="DatabaseConnector.cs" />
     <Compile Include="Interfaces\IDataSourcer.cs" />

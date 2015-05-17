@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SentimentAnalysis;
 
 namespace UnitTest
@@ -11,7 +10,7 @@ namespace UnitTest
         public void ShouldWriteToFile()
         {
             // Write sample data to CSV file
-            using ( var writer = new CsvFileWriter( "C:/Users/Nishant/Desktop/Dropbox/Docs/scores.csv" ) )
+            using ( var writer = new CsvFileWriter( "C:/Users/Nishant/Desktop/Dropbox/Docs/test.csv" ) )
             {
                 for ( var i = 0; i < 10; i++ )
                 {
