@@ -69,12 +69,13 @@ namespace UnitTest
         [TestMethod]
         public void ShouldGetScoredHandlesFromFileInput()
         {
-            const string filename = "Tech-ToDo-0";
+            const string filename = "Tech-ToDo-1";
             const string path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/" + filename + ".csv";
+            const string category = "Tech";
             var reader = new CsvFileReader( path );
             var handlesFromFile = reader.GetHandlesFromFile();
             var scoredHandles = TwitterDataSourcer.GetScoredHandlesFromUsernames( handlesFromFile );
-            WriteFiles( scoredHandles, "Tech" );
+            WriteFiles( scoredHandles, category );
         }
 
         [TestMethod]
@@ -162,6 +163,7 @@ namespace UnitTest
                         ((int) h.Score).ToString()
                         //h.Location
                     };
+
                     writer.WriteRow( row );
                 }
 

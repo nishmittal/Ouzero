@@ -60,6 +60,9 @@ namespace SentimentAnalysis
             var scoredHandles = new List<TwitterHandle>();
             foreach ( var user in users )
             {
+                if (user == null)
+                    continue;
+
                 var populatedHandle = GetPopulatedHandleFromUser( user );
                 if ( populatedHandle.Username.StartsWith( "invisible" ) )
                 {
@@ -115,6 +118,14 @@ namespace SentimentAnalysis
             return bio.Equals(string.Empty) ? "unspecified" : bio;
         }
 
+        private static string GetWebsite(IUser user)
+        {
+            var website = user.Url;
+            if (website == null || website.Equals(string.Empty))
+                return "unspecified";
+            return website;
+        }
+
         public static TwitterHandle GetPopulatedHandleFromUser( IUser user )
         {
             var h = new TwitterHandle( user.ScreenName )
@@ -124,7 +135,7 @@ namespace SentimentAnalysis
                 Followers = user.FollowersCount,
                 Friends = user.FriendsCount,
                 Location = GetLocation(user),
-                Website = user.Url
+                Website = GetWebsite(user)
             };
 
             var desc = GetBio(user);

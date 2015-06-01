@@ -39,18 +39,18 @@ namespace SentimentAnalysis
                     builder.Append( ',' );
                 // Implement special handling for values that contain comma or quote
                 // Enclose in quotes and double up any double quotes
-                //try
-                //{
+                try
+                {
 
                     if (value.IndexOfAny(new[] {'"', ','}) != -1)
                         builder.AppendFormat("\"{0}\"", value.Replace("\"", "\"\""));
                     else
                         builder.Append(value);
-                //}
-                //catch (Exception e)
-                //{
-                 //   var reason = e.Message;
-                //}
+                }
+                catch (Exception e)
+                {
+                    var reason = e.Message;
+                }
 
                 firstColumn = false;
             }
