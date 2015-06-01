@@ -12,28 +12,16 @@ namespace SentimentAnalysis
     /// </summary>
     public class TwitterDataSourcer : IDataSourcer
     {
-        private static string _accessToken = "3226815046-jOHYCioNDa0m3oLoukS35xY6DLsWQHbQRETZoPq";
-        private static string _accessTokenSecret = "XKUWVQgKEe2wD0wmLeCF5senwKqPAfcQQZEX5XYtNLQRs";
-        private static string _consumerKey = "nysITef21Ph7H5gb3mQaCBYXL";
-        private static string _consumerSecret = "x1ZAAXTxFeZcNN4yxQOC3sIESRTTtsJpwxKgsiBIcUnaGqH6Ap";
+        private const string AccessToken = "3226815046-jOHYCioNDa0m3oLoukS35xY6DLsWQHbQRETZoPq";
+        private const string AccessTokenSecret = "XKUWVQgKEe2wD0wmLeCF5senwKqPAfcQQZEX5XYtNLQRs";
+        private const string ConsumerKey = "nysITef21Ph7H5gb3mQaCBYXL";
+        private const string ConsumerSecret = "x1ZAAXTxFeZcNN4yxQOC3sIESRTTtsJpwxKgsiBIcUnaGqH6Ap";
 
-        public IList<TwitterHandle> Handles { get; set; }
         public static IList<TwitterHandle> MissingHandles = new List<TwitterHandle>();
-
-        /// <summary>
-        /// Stores a copy of the handles supplied and sets the credentials for use.
-        /// </summary>
-        /// <param name="handles"></param>
-        public TwitterDataSourcer( IList<TwitterHandle> handles )
-        {
-            Handles = handles;
-            TwitterCredentials.SetCredentials( _accessToken, _accessTokenSecret, _consumerKey, _consumerSecret );
-        }
-
 
         public static void SetCredentials()
         {
-            TwitterCredentials.SetCredentials( _accessToken, _accessTokenSecret, _consumerKey, _consumerSecret );
+            TwitterCredentials.SetCredentials( AccessToken, AccessTokenSecret, ConsumerKey, ConsumerSecret );
         }
 
         public static List<TwitterHandle> GetScoredHandlesFromUserLists( string name )
@@ -41,7 +29,7 @@ namespace SentimentAnalysis
             var scoredHandles = new List<TwitterHandle>();
 
             var ouzero = new TwitterHandle( name );
-            var ouzeroUser = GetUser( ouzero.Name );
+            var ouzeroUser = GetUser( ouzero.Username );
             var userLists = GetUserSubscribedLists( ouzeroUser );
 
             foreach ( var tweetList in userLists )
@@ -54,11 +42,18 @@ namespace SentimentAnalysis
 
         public static List<TwitterHandle> GetScoredHandlesFromUserList( string listName, string listCreator )
         {
-            var tweetList = TweetList.GetExistingList( listName, listCreator );
-            var usersInList = GetUsersInList( tweetList );
+            var usersInList = GetUsersFromList(listName, listCreator);
 
             return GetScoredHandlesFromUsers(usersInList);
         }
+
+        public static IEnumerable<IUser> GetUsersFromList(string listName, string listCreator)
+        {
+            var tweetList = TweetList.GetExistingList(listName, listCreator);
+            var usersInList = GetUsersInList(tweetList);
+            return usersInList;
+        }
+
 
         private static List<TwitterHandle> GetScoredHandlesFromUsers(IEnumerable<IUser> users)
         {
@@ -66,7 +61,7 @@ namespace SentimentAnalysis
             foreach ( var user in users )
             {
                 var populatedHandle = GetPopulatedHandleFromUser( user );
-                if ( populatedHandle.Name.StartsWith( "invisible" ) )
+                if ( populatedHandle.Username.StartsWith( "invisible" ) )
                 {
                     MissingHandles.Add( new TwitterHandle( user.ScreenName ) );
                 }
@@ -82,6 +77,12 @@ namespace SentimentAnalysis
         public static List<TwitterHandle> GetScoredHandlesFromUsernames(List<string> usernames )
         {
             var userList = usernames.Select(GetUser).ToList();
+            var usersList = new List<IUser>();
+
+            foreach (var username in usernames)
+            {
+                usersList.Add(GetUser(username));
+            }
 
             return GetScoredHandlesFromUsers(userList);
         }
@@ -118,9 +119,12 @@ namespace SentimentAnalysis
         {
             var h = new TwitterHandle( user.ScreenName )
             {
+                Name = user.Name,
+                ImgUrl = user.ProfileImageUrl,
                 Followers = user.FollowersCount,
                 Friends = user.FriendsCount,
                 Location = GetLocation(user),
+                Website = user.Url
             };
 
             var desc = GetBio(user);
@@ -170,10 +174,12 @@ namespace SentimentAnalysis
 
         private static TwitterHandle GetInvisibleUser()
         {
-            var t = new TwitterHandle("invisible");
-            t.Bio = "";
-            t.Location = "";
-            t.ImgUrl = "";
+            var t = new TwitterHandle("invisible")
+            {
+                Bio = "",
+                Location = "",
+                ImgUrl = ""
+            };
             return t;
         }
 

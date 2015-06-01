@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SentimentAnalysis;
+using Tweetinvi.Core.Interfaces;
 
 namespace UnitTest
 {
@@ -61,22 +64,71 @@ namespace UnitTest
         [TestMethod]
         public void Blah()
         {
-            const string path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/leftover-food.csv";
+        }
+
+        [TestMethod]
+        public void ShouldGetScoredHandlesFromFileInput()
+        {
+            const string filename = "Tech-ToDo-0";
+            const string path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/" + filename + ".csv";
             var reader = new CsvFileReader( path );
             var handlesFromFile = reader.GetHandlesFromFile();
             var scoredHandles = TwitterDataSourcer.GetScoredHandlesFromUsernames( handlesFromFile );
-            WriteFiles( scoredHandles, "food" );
-
+            WriteFiles( scoredHandles, "Tech" );
         }
 
+        [TestMethod]
+        public void SplitHandlesIntoChunks()
+        {
+            const int listSize = 88;
+            const string creator = "Scobleizer";
+            const string listName = "tech-news-brands";
+            const string category = "Tech";
+
+            TwitterDataSourcer.SetCredentials();
+
+            var usersFromList = TwitterDataSourcer.GetUsersFromList(listName, creator) as IList<IUser>;
+
+            if (usersFromList == null) return;
+
+            var names = usersFromList.Select(user => user.ScreenName).ToList();
+            var chunks = SplitList( names, listSize );
+
+            var index = 0;
+
+            foreach (var list in chunks)
+            {
+                var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/" + category + "-ToDo-" + index + ".csv";
+                using ( var writer = new CsvFileWriter( path ) )
+                    foreach ( var h in list )
+                    {
+                        var row = new CsvRow{h};
+                        writer.WriteRow( row );
+                    }
+
+                index++;
+            }
+        }
+
+        public static List<List<string>> SplitList( List<string> names, int nSize = 88 )
+        {
+            var list = new List<List<string>>();
+
+            for ( var i = 0; i < names.Count; i += nSize )
+            {
+                list.Add( names.GetRange( i, Math.Min( nSize, names.Count - i ) ) );
+            }
+
+            return list;
+        } 
 
         [TestMethod]
         public void ShouldGetMyScoredHandles()
         {
+            const string creator = "nandita";
+            const string listName = "food-bloggers";
+            const string category = "Food";
             TwitterDataSourcer.SetCredentials();
-            var creator = "nandita";
-            var listName = "food-bloggers";
-            var category = "Food";
             var scoredHandles = TwitterDataSourcer.GetScoredHandlesFromUserList( listName, creator );
             // Write sample data to CSV file
             WriteFiles( scoredHandles, category );
@@ -94,15 +146,21 @@ namespace UnitTest
                 {
                     var row = new CsvRow
                     {
-                        h.Name,
+                        h.Username,
+                        h.ImgUrl,
                         h.Followers.ToString(),
+                        h.Friends.ToString(),
                         ((int) h.RetweetRate).ToString(),
                         ((int) h.FavouriteRate).ToString(),
-                        h.Friends.ToString(),
-                        category,
-                        ((int) h.Score).ToString(),
                         h.Bio,
-                        h.Location
+                        h.Website,
+                        h.AlexaRank.ToString(),
+                        h.AlexaBounce.ToString(),
+                        h.AlexaPagePer.ToString(),
+                        h.AlexaTraffic.ToString(),
+                        category,
+                        ((int) h.Score).ToString()
+                        //h.Location
                     };
                     writer.WriteRow( row );
                 }
@@ -116,7 +174,7 @@ namespace UnitTest
             using ( var writer = new CsvFileWriter( path ) )
                 foreach ( var h in missingHandles )
                 {
-                    var row = new CsvRow { h.Name };
+                    var row = new CsvRow { h.Username };
                     writer.WriteRow( row );
                 }
         }

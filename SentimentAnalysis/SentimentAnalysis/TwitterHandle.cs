@@ -8,6 +8,10 @@
         /// <summary>
         /// Twitter username.
         /// </summary>
+        public string Username { get; set; }
+        /// <summary>
+        /// Name of account.
+        /// </summary>
         public string Name { get; set; }
         /// <summary>
         /// Number of followers.
@@ -32,20 +36,24 @@
         /// <summary>
         /// Category of user. (e.g. tech, food, cars)
         /// </summary>
-        public string Category { get; set; }
+        public string Category { get; set;}
 
         public string Bio { get; set; }
         public string ImgUrl { get; set; }
         public string Location { get; set; }
-
+        public string Website { get; set; }
+        public int AlexaRank { get; set; }
+        public int AlexaBounce { get; set; }
+        public int AlexaPagePer { get; set; }
+        public int AlexaTraffic { get; set; }
 
         /// <summary>
         /// Constructor for the TwitterHandle object.
         /// </summary>
-        /// <param name="name">Twitter username of the account represented by this object.</param>
-        public TwitterHandle( string name )
+        /// <param name="username">Twitter username of the account represented by this object.</param>
+        public TwitterHandle( string username )
         {
-            Name = name;
+            Username = username;
             Category = "unsorted";
         }
     }

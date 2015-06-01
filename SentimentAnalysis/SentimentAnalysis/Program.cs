@@ -26,7 +26,7 @@ namespace SentimentAnalysis
             using ( var writer = new CsvFileWriter( "C:/Users/Nishant/Desktop/Dropbox/Docs/scores.csv" ) )
                 foreach ( var h in scoredHandles )
                 {
-                    var row = new CsvRow { h.Name, h.Followers.ToString(), ( (int) h.RetweetRate ).ToString(), ( (int) h.FavouriteRate ).ToString(), h.Friends.ToString(), h.Category, ( (int) h.Score ).ToString() };
+                    var row = new CsvRow { h.Username, h.Followers.ToString(), ( (int) h.RetweetRate ).ToString(), ( (int) h.FavouriteRate ).ToString(), h.Friends.ToString(), h.Category, ( (int) h.Score ).ToString() };
                     writer.WriteRow( row );
                 }
         }
