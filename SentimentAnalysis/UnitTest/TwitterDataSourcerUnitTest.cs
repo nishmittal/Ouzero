@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SentimentAnalysis;
+using Tweetinvi.Core.Extensions;
 using Tweetinvi.Core.Interfaces;
 
 namespace UnitTest
@@ -64,13 +65,14 @@ namespace UnitTest
         [TestMethod]
         public void Blah()
         {
+            
         }
 
         [TestMethod]
         public void ShouldGetScoredHandlesFromFileInput()
         {
-            const string filename = "Tech-ToDo-1";
-            const string path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/" + filename + ".csv";
+            const string filename = "Tech-ToDo-2";
+            const string path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/tech-news-people/" + filename + ".csv";
             const string category = "Tech";
             var reader = new CsvFileReader( path );
             var handlesFromFile = reader.GetHandlesFromFile();
@@ -83,7 +85,7 @@ namespace UnitTest
         {
             const int listSize = 88;
             const string creator = "Scobleizer";
-            const string listName = "tech-news-brands";
+            const string listName = "tech-news-people";
             const string category = "Tech";
 
             TwitterDataSourcer.SetCredentials();
@@ -137,10 +139,10 @@ namespace UnitTest
 
         private static void WriteFiles( IEnumerable<TwitterHandle> scoredHandles, string category )
         {
-            var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/" + category + ".csv";
+            var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/tech-news-people/" + category + ".csv";
             if ( File.Exists( path ) )
             {
-                path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/" + category + "1.csv";
+                path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/tech-news-people/" + category + "1.csv";
             }
             using ( var writer = new CsvFileWriter( path ) )
                 foreach ( var h in scoredHandles )
@@ -167,12 +169,16 @@ namespace UnitTest
                     writer.WriteRow( row );
                 }
 
+            var missingHandles = TwitterDataSourcer.MissingHandles;
+
+            if (missingHandles.IsNullOrEmpty())
+                return;
+
             path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/leftover-" + category + ".csv";
             if ( File.Exists( path ) )
             {
                 path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/leftover-" + category + "1.csv";
             }
-            var missingHandles = TwitterDataSourcer.MissingHandles;
             using ( var writer = new CsvFileWriter( path ) )
                 foreach ( var h in missingHandles )
                 {
