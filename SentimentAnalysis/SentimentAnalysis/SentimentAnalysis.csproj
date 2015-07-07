@@ -53,6 +53,12 @@
     <Reference Include="Autofac">
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="FluentNHibernate">
+      <HintPath>..\packages\FluentNHibernate.2.0.1.0\lib\net40\FluentNHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\packages\Iesi.Collections.4.0.0.4000\lib\net40\Iesi.Collections.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Threading.Tasks">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
     </Reference>
@@ -64,6 +70,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate">
+      <HintPath>..\packages\NHibernate.4.0.0.4000\lib\net40\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -107,25 +116,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CsvFileReader.cs" />
-    <Compile Include="CsvFileWriter.cs" />
-    <Compile Include="DatabaseConnector.cs" />
+    <Compile Include="Csv\CsvFileReader.cs" />
+    <Compile Include="Csv\CsvFileWriter.cs" />
+    <Compile Include="Database\DatabaseConnector.cs" />
+    <Compile Include="Database\FluentNHibernateHelper.cs" />
+    <Compile Include="Entities\ScoredHandle.cs" />
+    <Compile Include="Interfaces\IDatabaseConnector.cs" />
     <Compile Include="Interfaces\IDataSourcer.cs" />
+    <Compile Include="Mappings\ScoredHandleMap.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="TwitterDataSourcer.cs" />
-    <Compile Include="TwitterHandle.cs" />
-    <Compile Include="Weights.cs" />
+    <Compile Include="TwitterData\TwitterDataSourcer.cs" />
+    <Compile Include="TwitterData\TwitterHandle.cs" />
+    <Compile Include="Enums\Weights.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -153,20 +161,21 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="db\ScoredHandles.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="db\ScoredHandles_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Database\ScoredHandles.mdf" />
+    <Content Include="Database\ScoredHandles_log.ldf">
       <DependentUpon>ScoredHandles.mdf</DependentUpon>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -6,7 +6,7 @@ namespace UnitTest
     [TestClass]
     public class CsvFileWriterUnitTest
     {
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ShouldWriteToFile()
         {
             // Write sample data to CSV file

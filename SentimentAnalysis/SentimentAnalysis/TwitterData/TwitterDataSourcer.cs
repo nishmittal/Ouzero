@@ -153,6 +153,7 @@ namespace SentimentAnalysis
             }
             catch ( Exception e) //something went wrong
             {
+                Console.WriteLine("Error when getting populated handle: " + e.Message);
                 return GetInvisibleUser();
             }
 

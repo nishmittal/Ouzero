@@ -18,57 +18,14 @@ namespace UnitTest
             TwitterDataSourcer.SetCredentials();
         }
 
-        //TODO Need to write these tests
-
-        [TestMethod]
-        public void ShouldSetUpCredentialsCorrectly()
-        {
-
-        }
-
-        [TestMethod]
-        public void ShouldGetUserFromName()
-        {
-
-        }
-
-        [TestMethod]
-        public void ShouldGetTheCorrectNumberOfSubscribedLists()
-        {
-
-        }
-
-        [TestMethod]
-        public void ShouldGetCorrectNumberOfUsersInList()
-        {
-
-        }
-
-        [TestMethod]
-        public void ShouldSetUpAPopulatedHandleFromAUser()
-        {
-
-        }
-
-        [TestMethod]
-        public void ShouldComputeScoreCorrectlyWhenGivenATwitterHandle()
-        {
-
-        }
-
-        [TestMethod]
-        public void ShouldGetCorrectNumberOfTweetsFromUser()
-        {
-
-        }
-
+        
         [TestMethod]
         public void Blah()
         {
             
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ShouldGetScoredHandlesFromFileInput()
         {
             const string filename = "Tech-ToDo-2";
@@ -80,7 +37,7 @@ namespace UnitTest
             WriteFiles( scoredHandles, category );
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void SplitHandlesIntoChunks()
         {
             const int listSize = 88;
@@ -125,7 +82,7 @@ namespace UnitTest
             return list;
         } 
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ShouldGetMyScoredHandles()
         {
             const string creator = "nandita";

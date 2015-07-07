@@ -55,6 +55,25 @@
         {
             Username = username;
             Category = "unsorted";
+            InitialiseProperties();
+        }
+
+        private void InitialiseProperties()
+        {
+            Name = "";
+            Followers = 0;
+            RetweetRate = 0;
+            FavouriteRate = 0;
+            Score = 0;
+            Friends = 0;
+            Bio = "";
+            ImgUrl = "";
+            Location = "";
+            Website = "";
+            AlexaRank = 0;
+            AlexaBounce = 0;
+            AlexaPagePer = 0;
+            AlexaTraffic = 0;
         }
     }
 }
