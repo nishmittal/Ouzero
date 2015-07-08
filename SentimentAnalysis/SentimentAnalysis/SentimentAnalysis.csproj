@@ -118,11 +118,8 @@
   <ItemGroup>
     <Compile Include="Csv\CsvFileReader.cs" />
     <Compile Include="Csv\CsvFileWriter.cs" />
-    <Compile Include="Database\DatabaseConnector.cs" />
     <Compile Include="Database\FluentNHibernateHelper.cs" />
     <Compile Include="Entities\ScoredHandle.cs" />
-    <Compile Include="Interfaces\IDatabaseConnector.cs" />
-    <Compile Include="Interfaces\IDataSourcer.cs" />
     <Compile Include="Mappings\ScoredHandleMap.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -134,6 +131,7 @@
     <Compile Include="TwitterData\TwitterDataSourcer.cs" />
     <Compile Include="TwitterData\TwitterHandle.cs" />
     <Compile Include="Enums\Weights.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -175,7 +173,9 @@
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

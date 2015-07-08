@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SentimentAnalysis.Interfaces;
 using Tweetinvi;
 using Tweetinvi.Core.Interfaces;
 
-namespace SentimentAnalysis
+namespace SentimentAnalysis.TwitterData
 {
     /// <summary>
-    /// Twitter-oriented implementation of the <see cref="IDataSourcer"/>interface.
+    /// Twitter-oriented implementation.
     /// </summary>
-    public class TwitterDataSourcer : IDataSourcer
+    public static class TwitterDataSourcer
     {
         private const string AccessToken = "3226815046-jOHYCioNDa0m3oLoukS35xY6DLsWQHbQRETZoPq";
         private const string AccessTokenSecret = "XKUWVQgKEe2wD0wmLeCF5senwKqPAfcQQZEX5XYtNLQRs";
         private const string ConsumerKey = "nysITef21Ph7H5gb3mQaCBYXL";
         private const string ConsumerSecret = "x1ZAAXTxFeZcNN4yxQOC3sIESRTTtsJpwxKgsiBIcUnaGqH6Ap";
 
-        public static IList<TwitterHandle> MissingHandles = new List<TwitterHandle>();
+        public static readonly IList<TwitterHandle> MissingHandles = new List<TwitterHandle>();
 
         public static void SetCredentials()
         {
@@ -79,6 +78,7 @@ namespace SentimentAnalysis
 
         public static List<TwitterHandle> GetScoredHandlesFromUsernames(List<string> usernames )
         {
+            // TODO VERIFY THE FIRST ONE WORKS
             var userList = usernames.Select(GetUser).ToList();
             var usersList = new List<IUser>();
 
@@ -153,7 +153,7 @@ namespace SentimentAnalysis
             }
             catch ( Exception e) //something went wrong
             {
-                Console.WriteLine("Error when getting populated handle: " + e.Message);
+                Console.WriteLine(@"Error when getting populated handle: " + e.Message);
                 return GetInvisibleUser();
             }
 
@@ -200,7 +200,7 @@ namespace SentimentAnalysis
         /// </summary>
         /// <param name="h"></param>
         /// <returns></returns>
-        public static double ComputeScoreStatic( TwitterHandle h )
+        private static double ComputeScoreStatic( TwitterHandle h )
         {
             var score = Math.Pow( h.RetweetRate, 2 ) + h.FavouriteRate + h.Friends / 100 + ( h.Followers / 1000 );
             return score;

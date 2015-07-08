@@ -1,4 +1,4 @@
-﻿namespace SentimentAnalysis
+﻿namespace SentimentAnalysis.Enums
 {
     public enum Weights
 	{

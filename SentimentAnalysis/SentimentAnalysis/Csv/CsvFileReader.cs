@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace SentimentAnalysis
+namespace SentimentAnalysis.Csv
 {
     public class CsvFileReader : StreamReader
     {

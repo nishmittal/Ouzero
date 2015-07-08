@@ -1,6 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SentimentAnalysis;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SentimentAnalysis.Csv;
 
 namespace UnitTest
 {

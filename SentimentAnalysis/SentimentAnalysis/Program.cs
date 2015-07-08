@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using SentimentAnalysis.Csv;
+using SentimentAnalysis.TwitterData;
 
 namespace SentimentAnalysis
 {
-    class Program
+    public class Program
     {
         private IList<TwitterHandle> _handles;
 
