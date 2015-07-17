@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Tweetinvi;
 using Tweetinvi.Core.Interfaces;
@@ -11,16 +12,22 @@ namespace SentimentAnalysis.TwitterData
     /// </summary>
     public static class TwitterDataSourcer
     {
-        private const string AccessToken = "3226815046-jOHYCioNDa0m3oLoukS35xY6DLsWQHbQRETZoPq";
-        private const string AccessTokenSecret = "XKUWVQgKEe2wD0wmLeCF5senwKqPAfcQQZEX5XYtNLQRs";
-        private const string ConsumerKey = "nysITef21Ph7H5gb3mQaCBYXL";
-        private const string ConsumerSecret = "x1ZAAXTxFeZcNN4yxQOC3sIESRTTtsJpwxKgsiBIcUnaGqH6Ap";
+        private static string _accessToken;
+        private static string _accessTokenSecret;
+        private static string _consumerKey;
+        private static string _consumerSecret;
 
         public static readonly IList<TwitterHandle> MissingHandles = new List<TwitterHandle>();
+        private static Dictionary<string, string> _keys;
 
         public static void SetCredentials()
         {
-            TwitterCredentials.SetCredentials( AccessToken, AccessTokenSecret, ConsumerKey, ConsumerSecret );
+            PopulateKeysDictionary();
+            _keys.TryGetValue("AccessToken", out _accessToken);
+            _keys.TryGetValue("AccessTokenSecret", out _accessTokenSecret);
+            _keys.TryGetValue("ConsumerKey", out _consumerKey);
+            _keys.TryGetValue("ConsumerSecret", out _consumerSecret);
+            TwitterCredentials.SetCredentials( _accessToken, _accessTokenSecret, _consumerKey, _consumerSecret );
         }
 
         public static List<TwitterHandle> GetScoredHandlesFromUserLists( string name )
@@ -236,5 +243,10 @@ namespace SentimentAnalysis.TwitterData
             return tweets.Distinct().ToArray();
         }
 
+        private static void PopulateKeysDictionary()
+        {
+            const string path = @"C:\Users\Nishant\Documents\twitterkeys.csv";
+            _keys = File.ReadLines(path).Select(line => line.Split(',')).ToDictionary(line => line[0], line => line[1]);
+        }
     }
 }
