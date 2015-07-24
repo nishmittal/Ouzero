@@ -97,18 +97,18 @@ namespace SentimentAnalysis.TwitterData
             return GetScoredHandlesFromUsers(userList);
         }
 
-        public static IUser GetUser( string name )
+        private static IUser GetUser( string name )
         {
             return User.GetUserFromScreenName( name );
         }
 
-        public static ITweetList[] GetUserSubscribedLists( IUser user )
+        private static ITweetList[] GetUserSubscribedLists( IUser user )
         {
             var tweetLists = TweetList.GetUserLists( user, false );
             return tweetLists.ToArray();
         }
 
-        public static IEnumerable<IUser> GetUsersInList( ITweetList list )
+        private static IEnumerable<IUser> GetUsersInList( ITweetList list )
         {
             return list.GetMembers( 10000 );
         }
@@ -133,7 +133,7 @@ namespace SentimentAnalysis.TwitterData
             return website;
         }
 
-        public static TwitterHandle GetPopulatedHandleFromUser( IUser user )
+        private static TwitterHandle GetPopulatedHandleFromUser( IUser user )
         {
             var h = new TwitterHandle( user.ScreenName )
             {
@@ -219,7 +219,7 @@ namespace SentimentAnalysis.TwitterData
         /// <param name="user"></param>
         /// <param name="maxNumberOfTweets"></param>
         /// <returns></returns>
-        public static ITweet[] GetUserTimelineTweets( IUser user, int maxNumberOfTweets )
+        private static ITweet[] GetUserTimelineTweets( IUser user, int maxNumberOfTweets )
         {
             var tweets = new List<ITweet>();
 
