@@ -19,7 +19,7 @@ namespace SentimentAnalysis
 
             var usersFromList = TwitterDataSourcer.GetUsersFromList(listName, creator) as IList<IUser>;
 
-            if (usersFromList == null)
+            if(usersFromList == null)
                 return;
 
             var names = usersFromList.Select(user => user.ScreenName).ToList();
@@ -27,13 +27,12 @@ namespace SentimentAnalysis
 
             var index = 0;
 
-            foreach (var list in chunks)
+            foreach(var list in chunks)
             {
                 var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/" + category + "-ToDo-" + index + ".csv";
-                using (var writer = new CsvFileWriter(path))
-                    foreach (var h in list)
+                using(var writer = new CsvFileWriter(path))
+                    foreach(var row in list.Select(h => new CsvRow { h }))
                     {
-                        var row = new CsvRow { h };
                         writer.WriteRow(row);
                     }
 
@@ -41,11 +40,11 @@ namespace SentimentAnalysis
             }
         }
 
-        public static List<List<string>> SplitList(List<string> names, int nSize = 88)
+        private static List<List<string>> SplitList(List<string> names, int nSize = 88)
         {
             var list = new List<List<string>>();
 
-            for (var i = 0; i < names.Count; i += nSize)
+            for(var i = 0; i < names.Count; i += nSize)
             {
                 list.Add(names.GetRange(i, Math.Min(nSize, names.Count - i)));
             }
@@ -56,49 +55,51 @@ namespace SentimentAnalysis
         public static void WriteFiles(IEnumerable<TwitterHandle> scoredHandles, string category)
         {
             var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/tech-news-people/" + category + ".csv";
-            if (File.Exists(path))
+            if(File.Exists(path))
             {
                 path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/tech-news-people/" + category + "1.csv";
             }
-            using (var writer = new CsvFileWriter(path))
-                foreach (var h in scoredHandles)
+            using(var writer = new CsvFileWriter(path))
+                foreach(var row in scoredHandles.Select(h => new CsvRow
                 {
-                    var row = new CsvRow
-                    {
-                        h.Username,
-                        h.ImgUrl,
-                        h.Followers.ToString(),
-                        h.Friends.ToString(),
-                        ((int) h.RetweetRate).ToString(),
-                        ((int) h.FavouriteRate).ToString(),
-                        h.Bio,
-                        h.Website,
-                        h.AlexaRank.ToString(),
-                        h.AlexaBounce.ToString(),
-                        h.AlexaPagePer.ToString(),
-                        h.AlexaTraffic.ToString(),
-                        category,
-                        ((int) h.Score).ToString()
-                        //h.Location
-                    };
-
+                    h.Username,
+                    h.ImgUrl,
+                    h.Followers.ToString(),
+                    h.Friends.ToString(),
+                    ((int) h.RetweetRate).ToString(),
+                    ((int) h.FavouriteRate).ToString(),
+                    h.Bio,
+                    h.Website,
+                    h.AlexaRank.ToString(),
+                    h.AlexaBounce.ToString(),
+                    h.AlexaPagePer.ToString(),
+                    h.AlexaTraffic.ToString(),
+                    category,
+                    ((int) h.Score).ToString()
+                    //h.Location
+                }))
+                {
                     writer.WriteRow(row);
                 }
 
+            WriteMissingHandlesFile(category);
+        }
+
+        public static void WriteMissingHandlesFile(string category)
+        {
             var missingHandles = TwitterDataSourcer.MissingHandles;
 
-            if (missingHandles.IsNullOrEmpty())
+            if(missingHandles.IsNullOrEmpty())
                 return;
 
-            path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/leftover-" + category + ".csv";
-            if (File.Exists(path))
+            var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/leftover-" + category + ".csv";
+            if(File.Exists(path))
             {
-                path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/leftover-" + category + "1.csv";
+                path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/leftover-" + category + "_1.csv";
             }
-            using (var writer = new CsvFileWriter(path))
-                foreach (var h in missingHandles)
+            using(var writer = new CsvFileWriter(path))
+                foreach(var row in missingHandles.Select(h => new CsvRow { h.Username }))
                 {
-                    var row = new CsvRow { h.Username };
                     writer.WriteRow(row);
                 }
         }

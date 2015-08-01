@@ -116,9 +116,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncTester.cs" />
     <Compile Include="Csv\CsvFileReader.cs" />
     <Compile Include="Csv\CsvFileWriter.cs" />
+    <Compile Include="Database\DatabaseConnector.cs" />
     <Compile Include="Database\FluentNHibernateHelper.cs" />
     <Compile Include="Entities\ScoredHandle.cs" />
     <Compile Include="Mappings\ScoredHandleMap.cs" />

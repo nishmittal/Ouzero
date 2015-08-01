@@ -12,11 +12,11 @@ namespace SentimentAnalysis.Database
 
         private static ISessionFactory CreateSessionFactory()
         {
-            AppDomain.CurrentDomain.SetData( "DataDirectory", GetProjectDirectory() );
+            AppDomain.CurrentDomain.SetData("DataDirectory", GetProjectDirectory());
             _sessionFactory =
                 Fluently.Configure()
-                    .Database( MsSqlConfiguration.MsSql2012.ConnectionString( Settings.Default.DbConnectionString ) )
-                    .Mappings( m => m.FluentMappings.AddFromAssemblyOf<Program>() )
+                    .Database(MsSqlConfiguration.MsSql2012.ConnectionString(Settings.Default.DbConnectionString))
+                    .Mappings(m => m.FluentMappings.AddFromAssemblyOf<Program>())
                     .BuildSessionFactory();
 
             return _sessionFactory;
@@ -27,21 +27,26 @@ namespace SentimentAnalysis.Database
             return CreateSessionFactory().OpenSession();
         }
 
-        public static string GetProjectDirectory()
+        public static IStatelessSession OpenStatelessSession()
         {
-            string path = Environment.CurrentDirectory;
+            return CreateSessionFactory().OpenStatelessSession();
+        }
 
-            path = path.Replace( "\\bin\\Debug", "" );
+        private static string GetProjectDirectory()
+        {
+            var path = Environment.CurrentDirectory;
+
+            path = path.Replace("\\bin\\Debug", "");
 
             path = path.Replace("\\UnitTest", "");
 
             path = path + "\\SentimentAnalysis";
 
-            if ( path.EndsWith( "Ouzero\\SentimentAnalysis\\SentimentAnalysis" ) )
+            if(path.EndsWith("Ouzero\\SentimentAnalysis\\SentimentAnalysis"))
             {
                 return path;
             }
-            throw new Exception( "Path couldn't be worked out." );
+            throw new Exception("Path couldn't be worked out.");
         }
     }
 }

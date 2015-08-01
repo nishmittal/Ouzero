@@ -1,6 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SentimentAnalysis;
-using SentimentAnalysis.Csv;
+using SentimentAnalysis.Database;
 using SentimentAnalysis.TwitterData;
 
 namespace UnitTest
@@ -14,21 +17,15 @@ namespace UnitTest
             TwitterDataSourcer.SetCredentials();
         }
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void ShouldGetScoredHandlesFromFileInput()
         {
-            const string filename = "Tech-ToDo-2";
-            const string path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/tech-news-people/" + filename + ".csv";
             const string category = "Tech";
-            ScoreHandlesFromFile(path, category);
-        }
-
-        private static void ScoreHandlesFromFile(string path, string category)
-        {
-            var reader = new CsvFileReader(path);
-            var handlesFromFile = reader.GetHandlesFromFile();
-            var scoredHandles = TwitterDataSourcer.GetScoredHandlesFromUsernames(handlesFromFile);
-            Utilities.WriteFiles(scoredHandles, category);
+            var files = Directory.GetFiles("C:/Users/Nishant/Desktop/Dropbox/Ouzero/tech-news-people/");
+            var scoredHandles = TwitterDataSourcer.ScoreHandlesFromFiles(files, category);
+            DatabaseConnector.InsertRecords(scoredHandles);
+            Utilities.WriteMissingHandlesFile(category);
+            var scoringTimes = TwitterDataSourcer.ScoringTimes;
         }
 
         [TestMethod, Ignore]
@@ -42,7 +39,6 @@ namespace UnitTest
             // Write sample data to CSV file
             Utilities.WriteFiles(scoredHandles, category);
         }
-
 
     }
 }

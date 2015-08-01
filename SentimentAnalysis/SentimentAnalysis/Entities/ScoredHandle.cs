@@ -1,5 +1,6 @@
 ﻿namespace SentimentAnalysis.Entities
 {
+    // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class ScoredHandle
     {
         public virtual string Username { get; set; }
