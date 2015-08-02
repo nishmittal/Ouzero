@@ -3,6 +3,7 @@ using SentimentAnalysis.Entities;
 
 namespace SentimentAnalysis.Mappings
 {
+    // ReSharper disable once UnusedMember.Global
     public class ScoredHandleMap : ClassMap<ScoredHandle>
     {
         public ScoredHandleMap()

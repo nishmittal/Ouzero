@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SentimentAnalysis;
@@ -18,14 +17,14 @@ namespace UnitTest
             TwitterDataSourcer.SetCredentials();
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ShouldGetScoredHandlesFromFileInput()
         {
             const string category = "Tech";
             var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/tech-news-people/";
             var files = Directory.GetFiles(path);
             var scoredHandles = TwitterDataSourcer.ScoreHandlesFromFiles(files, category);
-            DatabaseConnector.InsertRecords(scoredHandles);
+            DatabaseConnector.BatchInsertRecords(scoredHandles);
             Utilities.WriteMissingHandlesFile(category);
             var scoringTimes = TwitterDataSourcer.ScoringTimes;
             using(var writer = new CsvFileWriter(path))
@@ -47,7 +46,7 @@ namespace UnitTest
             Utilities.WriteScoredHandlesFile(scoredHandles, category);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ShouldCreateFilesOfHandlesFromList()
         {
             const string creator = "nandita";

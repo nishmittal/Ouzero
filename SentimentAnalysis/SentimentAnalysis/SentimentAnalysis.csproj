@@ -136,7 +136,6 @@
     </Compile>
     <Compile Include="TwitterData\TwitterDataSourcer.cs" />
     <Compile Include="TwitterData\TwitterHandle.cs" />
-    <Compile Include="Enums\Weights.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>

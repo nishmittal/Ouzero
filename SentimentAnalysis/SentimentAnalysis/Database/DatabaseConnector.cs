@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SentimentAnalysis.Entities;
+using SentimentAnalysis.TwitterData;
 
 namespace SentimentAnalysis.Database
 {
-    public class DatabaseConnector
+    public static class DatabaseConnector
     {
-        public static void InsertRecords(IEnumerable<TwitterHandle> scoredHandles)
+        public static void BatchInsertRecords(IEnumerable<TwitterHandle> scoredHandles)
         {
             var handles = GetScoredHandlesList(scoredHandles);
             var session = FluentNHibernateHelper.OpenStatelessSession();

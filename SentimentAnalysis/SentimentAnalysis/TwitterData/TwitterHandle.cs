@@ -1,4 +1,4 @@
-﻿namespace SentimentAnalysis
+﻿namespace SentimentAnalysis.TwitterData
 {
     /// <summary>
     /// Represents a Twitter Handle for which we store data.

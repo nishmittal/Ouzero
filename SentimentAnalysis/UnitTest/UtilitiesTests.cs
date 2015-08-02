@@ -17,7 +17,6 @@ namespace UnitTest
 
             Utilities.WriteFile(path, lines);
 
-
             Assert.IsTrue(File.Exists(path));
             Assert.AreEqual(lines.Count, File.ReadLines(path).Count());
         }

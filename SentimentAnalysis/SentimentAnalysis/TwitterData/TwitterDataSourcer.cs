@@ -270,9 +270,9 @@ namespace SentimentAnalysis.TwitterData
             return scoredHandles;
         }
 
-        public static List<string> ScoringTimes { get; set; }
+        public static List<string> ScoringTimes { get; private set; }
 
-        private static List<TwitterHandle> ScoreHandlesFromFile(string path, string category)
+        private static IEnumerable<TwitterHandle> ScoreHandlesFromFile(string path, string category)
         {
             var reader = new CsvFileReader(path);
             var handlesFromFile = reader.GetHandlesFromFile();

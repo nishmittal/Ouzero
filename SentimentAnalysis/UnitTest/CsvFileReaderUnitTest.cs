@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SentimentAnalysis.Csv;
+using UnitTest.Properties;
 
 namespace UnitTest
 {
