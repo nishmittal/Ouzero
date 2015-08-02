@@ -53,12 +53,12 @@ namespace SentimentAnalysis
             return list;
         }
 
-        public static void WriteScoredHandlesFile(IEnumerable<TwitterHandle> scoredHandles, string category)
+        public static void WriteScoredHandlesFile(string folderPath, IEnumerable<TwitterHandle> scoredHandles, string category)
         {
-            var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/tech-news-people/" + category + ".csv";
+            var path = folderPath + category + ".csv";
             if(File.Exists(path))
             {
-                path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/tech-news-people/" + category + "1.csv";
+                path = folderPath + category + "1.csv";
             }
             using(var writer = new CsvFileWriter(path))
                 foreach(var row in scoredHandles.Select(h => new CsvRow
@@ -83,20 +83,20 @@ namespace SentimentAnalysis
                     writer.WriteRow(row);
                 }
 
-            WriteMissingHandlesFile(category);
+            WriteMissingHandlesFile(folderPath, category);
         }
 
-        public static void WriteMissingHandlesFile(string category)
+        public static void WriteMissingHandlesFile(string folderPath, string category)
         {
             var missingHandles = TwitterDataSourcer.MissingHandles;
 
             if(missingHandles.IsNullOrEmpty())
                 return;
 
-            var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/leftover-" + category + ".csv";
+            var path = folderPath + "leftover-" + category + ".csv";
             if(File.Exists(path))
             {
-                path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/leftover-" + category + "_1.csv";
+                path = folderPath + "/leftover-" + category + "_1.csv";
             }
 
             var lines = missingHandles.Select(h => h.Username);

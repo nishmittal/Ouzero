@@ -20,18 +20,16 @@ namespace UnitTest
         [TestMethod, Ignore]
         public void ShouldGetScoredHandlesFromFileInput()
         {
-            const string category = "Tech";
-            var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/tech-news-people/";
+            const string category = "Food";
+            var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/food-bloggers/";
             var files = Directory.GetFiles(path);
             var scoredHandles = TwitterDataSourcer.ScoreHandlesFromFiles(files, category);
             DatabaseConnector.BatchInsertRecords(scoredHandles);
-            Utilities.WriteMissingHandlesFile(category);
+            var missingHandles = TwitterDataSourcer.MissingHandles;
+            Utilities.WriteMissingHandlesFile(path, category);
             var scoringTimes = TwitterDataSourcer.ScoringTimes;
-            using(var writer = new CsvFileWriter(path))
-                foreach(var t in scoringTimes.Select(h => new CsvRow { h }))
-                {
-                    writer.WriteRow(t);
-                }
+            path = path + "ScoringTimes.txt";
+            Utilities.WriteFile(path, scoringTimes);
         }
 
         [TestMethod, Ignore]
@@ -43,7 +41,8 @@ namespace UnitTest
             TwitterDataSourcer.SetCredentials();
             var scoredHandles = TwitterDataSourcer.GetScoredHandlesFromUserList(listName, creator);
             // Write sample data to CSV file
-            Utilities.WriteScoredHandlesFile(scoredHandles, category);
+            var mainFolderPath = @"C:\Users\Nishant\Desktop\Dropbox\Ouzero\";
+            Utilities.WriteScoredHandlesFile(mainFolderPath, scoredHandles, category);
         }
 
         [TestMethod, Ignore]
