@@ -35,10 +35,11 @@ namespace SentimentAnalysis
                     {
                         writer.WriteRow(row);
                     }
-
                 index++;
             }
         }
+
+
 
         private static List<List<string>> SplitList(List<string> names, int nSize = 88)
         {
@@ -52,7 +53,7 @@ namespace SentimentAnalysis
             return list;
         }
 
-        public static void WriteFiles(IEnumerable<TwitterHandle> scoredHandles, string category)
+        public static void WriteScoredHandlesFile(IEnumerable<TwitterHandle> scoredHandles, string category)
         {
             var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/tech-news-people/" + category + ".csv";
             if(File.Exists(path))
@@ -97,10 +98,18 @@ namespace SentimentAnalysis
             {
                 path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/leftover-" + category + "_1.csv";
             }
+
+            var lines = missingHandles.Select(h => h.Username);
+
+            WriteFile(path, lines);
+        }
+
+        public static void WriteFile(string path, IEnumerable<string> lines)
+        {
             using(var writer = new CsvFileWriter(path))
-                foreach(var row in missingHandles.Select(h => new CsvRow { h.Username }))
+                foreach(var line in lines.Select(l => new CsvRow { l }))
                 {
-                    writer.WriteRow(row);
+                    writer.WriteRow(line);
                 }
         }
     }
