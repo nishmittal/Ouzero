@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Criterion;
+using NHibernate.Linq;
 using SentimentAnalysis.Entities;
 using SentimentAnalysis.TwitterData;
 
@@ -13,11 +16,15 @@ namespace SentimentAnalysis.Database
             var session = FluentNHibernateHelper.OpenStatelessSession();
             using(session)
             {
+                var list = session.Query<ScoredHandle>().ToList();
+                Console.WriteLine(@"Records before insert: " + list.Count);
                 session.SetBatchSize(handles.Count);
                 foreach(var handle in handles)
                 {
                     session.Insert(handle);
                 }
+                list = session.Query<ScoredHandle>().ToList();
+                Console.WriteLine(@"Records after insert: " + list.Count);
             }
         }
 
@@ -42,6 +49,15 @@ namespace SentimentAnalysis.Database
                 AlexaRank = t.AlexaRank,
                 Bio = t.Bio
             }).ToList();
+        }
+
+        public static int GetNumberOfRows()
+        {
+            var session = FluentNHibernateHelper.OpenSession();
+            return session.QueryOver<ScoredHandle>()
+                .Select(Projections.RowCount())
+                .FutureValue<int>()
+                .Value;
         }
     }
 }

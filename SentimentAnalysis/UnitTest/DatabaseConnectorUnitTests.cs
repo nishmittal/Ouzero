@@ -15,20 +15,9 @@ namespace UnitTest
         public void TestCommit_ShouldHaveOneMoreRecordThanBefore()
         {
             RemoveTestCommitsFromDb();
-            int originalNumberOfRows;
-            int rowsAfterTestCommit;
-            using(var session = FluentNHibernateHelper.OpenSession())
-            {
-                IList<ScoredHandle> handles = session.Query<ScoredHandle>().ToList();
-                originalNumberOfRows = handles.Count;
-            }
+            var originalNumberOfRows = DatabaseConnector.GetNumberOfRows();
             DoTestCommit("TestCommit");
-            using(var session = FluentNHibernateHelper.OpenSession())
-            {
-                IList<ScoredHandle> handles = session.Query<ScoredHandle>().ToList();
-
-                rowsAfterTestCommit = handles.Count;
-            }
+            var rowsAfterTestCommit = DatabaseConnector.GetNumberOfRows();
             Assert.IsTrue(rowsAfterTestCommit == originalNumberOfRows + 1);
             RemoveTestCommitsFromDb();
         }
@@ -58,7 +47,11 @@ namespace UnitTest
             }
         }
 
-
+        [TestMethod]
+        public void CheckNumberOfRecords()
+        {
+            Console.WriteLine(DatabaseConnector.GetNumberOfRows());
+        }
 
     }
 }

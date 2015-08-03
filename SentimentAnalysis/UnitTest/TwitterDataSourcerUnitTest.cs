@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SentimentAnalysis;
@@ -17,13 +18,14 @@ namespace UnitTest
             TwitterDataSourcer.SetCredentials();
         }
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void ShouldGetScoredHandlesFromFileInput()
         {
-            const string category = "Food";
-            var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/food-bloggers/";
+            const string category = "Tech";
+            var path = @"C:\Users\Nishant\Desktop\Dropbox\Ouzero\tech-news-brands\";
             var files = Directory.GetFiles(path);
             var scoredHandles = TwitterDataSourcer.ScoreHandlesFromFiles(files, category);
+            Utilities.WriteScoredHandlesFile(path, scoredHandles, category);
             DatabaseConnector.BatchInsertRecords(scoredHandles);
             var missingHandles = TwitterDataSourcer.MissingHandles;
             Utilities.WriteMissingHandlesFile(path, category);
@@ -48,11 +50,13 @@ namespace UnitTest
         [TestMethod, Ignore]
         public void ShouldCreateFilesOfHandlesFromList()
         {
-            const string creator = "nandita";
-            const string listName = "food-bloggers";
-            const string category = "Food";
+            const string creator = "Scobleizer";
+            const string listName = "tech-news-brands";
+            const string category = "Tech";
             Utilities.SplitTwitterListIntoHandleChunks(creator, listName, category);
         }
+
+        
 
     }
 }
