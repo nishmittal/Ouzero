@@ -29,12 +29,8 @@ namespace SentimentAnalysis
 
             foreach(var list in chunks)
             {
-                var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/" + category + "-ToDo-" + index + ".csv";
-                using(var writer = new CsvFileWriter(path))
-                    foreach(var row in list.Select(h => new CsvRow { h }))
-                    {
-                        writer.WriteRow(row);
-                    }
+                var path = "C:/Users/Nishant/Desktop/Dropbox/Ouzero/" + listName + "/" + category + "-ToDo-" + index + ".csv";
+                WriteFile(path, list);
                 index++;
             }
         }
@@ -83,7 +79,7 @@ namespace SentimentAnalysis
                     writer.WriteRow(row);
                 }
 
-            WriteMissingHandlesFile(folderPath, category);
+            //WriteMissingHandlesFile(folderPath, category);
         }
 
         public static void WriteMissingHandlesFile(string folderPath, string category)
@@ -106,6 +102,12 @@ namespace SentimentAnalysis
 
         public static void WriteFile(string path, IEnumerable<string> lines)
         {
+            if(!File.Exists(path))
+            {
+                var directory = (new FileInfo(path)).Directory;
+                if(directory != null)
+                    directory.Create();
+            }
             using(var writer = new CsvFileWriter(path))
                 foreach(var line in lines.Select(l => new CsvRow { l }))
                 {

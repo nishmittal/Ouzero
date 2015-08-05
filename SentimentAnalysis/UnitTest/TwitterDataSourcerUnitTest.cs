@@ -18,7 +18,7 @@ namespace UnitTest
             TwitterDataSourcer.SetCredentials();
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ShouldGetScoredHandlesFromFileInput()
         {
             const string category = "Tech";
@@ -50,13 +50,10 @@ namespace UnitTest
         [TestMethod, Ignore]
         public void ShouldCreateFilesOfHandlesFromList()
         {
-            const string creator = "Scobleizer";
-            const string listName = "tech-news-brands";
+            const string creator = "ProtectCELL";
+            const string listName = "tech-moms";
             const string category = "Tech";
             Utilities.SplitTwitterListIntoHandleChunks(creator, listName, category);
         }
-
-        
-
     }
 }
