@@ -1,9 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SentimentAnalysis;
-using SentimentAnalysis.Csv;
 using SentimentAnalysis.Database;
 using SentimentAnalysis.TwitterData;
 
@@ -18,16 +15,15 @@ namespace UnitTest
             TwitterDataSourcer.SetCredentials();
         }
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void ShouldGetScoredHandlesFromFileInput()
         {
-            const string category = "Tech";
-            var path = @"C:\Users\Nishant\Desktop\Dropbox\Ouzero\tech-news-brands\";
+            const string category = "Fitness";
+            var path = @"C:\Users\Nishant\Desktop\Dropbox\Ouzero\Fitness\";
             var files = Directory.GetFiles(path);
             var scoredHandles = TwitterDataSourcer.ScoreHandlesFromFiles(files, category);
             Utilities.WriteScoredHandlesFile(path, scoredHandles, category);
             DatabaseConnector.BatchInsertRecords(scoredHandles);
-            var missingHandles = TwitterDataSourcer.MissingHandles;
             Utilities.WriteMissingHandlesFile(path, category);
             var scoringTimes = TwitterDataSourcer.ScoringTimes;
             path = path + "ScoringTimes.txt";

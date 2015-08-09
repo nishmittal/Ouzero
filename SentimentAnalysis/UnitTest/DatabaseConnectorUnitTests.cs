@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NHibernate;
 using NHibernate.Linq;
-using SentimentAnalysis.Csv;
+using SentimentAnalysis;
 using SentimentAnalysis.Database;
 using SentimentAnalysis.Entities;
 
@@ -54,35 +52,12 @@ namespace UnitTest
         {
             var session = FluentNHibernateHelper.OpenSession();
             var records = session.Query<ScoredHandle>().ToList();
-            var path = @"C:\Users\Nishant\Desktop\Dropbox\Ouzero\DatabaseExport.csv";
+            const string path = @"C:\Users\Nishant\Desktop\Dropbox\Ouzero\DatabaseExport.csv";
 
-            using(var writer = new CsvFileWriter(path))
-                foreach(var h in records)
-                {
-                    var row = new CsvRow
-                    {
-                        h.Username,
-                        h.ImgUrl,
-                        h.Followers.ToString(),
-                        h.Friends.ToString(),
-                        ((int) h.RetweetRate).ToString(),
-                        ((int) h.FavouriteRate).ToString(),
-                        h.Bio,
-                        h.Website,
-                        h.AlexaRank.ToString(),
-                        h.AlexaBounce.ToString(),
-                        h.AlexaPagePerf.ToString(),
-                        h.AlexaTraffic.ToString(),
-                        h.Category,
-                        ((int) h.Score).ToString()
-                        //h.Location
-                        //h.Name
-                    };
-
-                    writer.WriteRow(row);
-                }
-            
+            Utilities.WriteDatabaseExportFile(path, records);
         }
+
+
 
         [TestMethod]
         public void CheckNumberOfRecords()

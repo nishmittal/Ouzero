@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SentimentAnalysis.Csv;
+using SentimentAnalysis.Entities;
 using SentimentAnalysis.TwitterData;
 using Tweetinvi.Core.Extensions;
 using Tweetinvi.Core.Interfaces;
@@ -51,6 +52,10 @@ namespace SentimentAnalysis
 
         public static void WriteScoredHandlesFile(string folderPath, IEnumerable<TwitterHandle> scoredHandles, string category)
         {
+            if(folderPath.EndsWith(@"\"))
+            {
+                folderPath = folderPath + @"\";
+            }
             var path = folderPath + category + ".csv";
             if(File.Exists(path))
             {
@@ -65,21 +70,20 @@ namespace SentimentAnalysis
                     h.Friends.ToString(),
                     ((int) h.RetweetRate).ToString(),
                     ((int) h.FavouriteRate).ToString(),
-                    h.Bio,
-                    h.Website,
                     h.AlexaRank.ToString(),
                     h.AlexaBounce.ToString(),
                     h.AlexaPagePer.ToString(),
                     h.AlexaTraffic.ToString(),
                     category,
-                    ((int) h.Score).ToString()
+                    ((int) h.Score).ToString(),
+                    h.Bio,
+                    h.Website
                     //h.Location
+                    //h.Name
                 }))
                 {
                     writer.WriteRow(row);
                 }
-
-            //WriteMissingHandlesFile(folderPath, category);
         }
 
         public static void WriteMissingHandlesFile(string folderPath, string category)
@@ -100,6 +104,7 @@ namespace SentimentAnalysis
             WriteFile(path, lines);
         }
 
+
         public static void WriteFile(string path, IEnumerable<string> lines)
         {
             if(!File.Exists(path))
@@ -112,6 +117,33 @@ namespace SentimentAnalysis
                 foreach(var line in lines.Select(l => new CsvRow { l }))
                 {
                     writer.WriteRow(line);
+                }
+        }
+
+        public static void WriteDatabaseExportFile(string path, List<ScoredHandle> records)
+        {
+            using(var writer = new CsvFileWriter(path))
+                foreach(var row in records.Select(h => new CsvRow
+                {
+                    h.Username,
+                    h.ImgUrl,
+                    h.Followers.ToString(),
+                    h.Friends.ToString(),
+                    ((int) h.RetweetRate).ToString(),
+                    ((int) h.FavouriteRate).ToString(),
+                    h.AlexaRank.ToString(),
+                    h.AlexaBounce.ToString(),
+                    h.AlexaPagePerf.ToString(),
+                    h.AlexaTraffic.ToString(),
+                    h.Category,
+                    ((int) h.Score).ToString(),
+                    h.Bio,
+                    h.Website
+                    //h.Location
+                    //h.Name
+                }))
+                {
+                    writer.WriteRow(row);
                 }
         }
     }

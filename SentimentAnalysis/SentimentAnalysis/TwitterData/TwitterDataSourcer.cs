@@ -23,6 +23,7 @@ namespace SentimentAnalysis.TwitterData
         public static readonly IList<TwitterHandle> MissingHandles = new List<TwitterHandle>();
         private static Dictionary<string, string> _keys;
         private static DateTime _lastScoreTime;
+        public static List<string> ScoringTimes { get; private set; }
 
         public static void SetCredentials()
         {
@@ -158,7 +159,8 @@ namespace SentimentAnalysis.TwitterData
             }
             catch(Exception e) //something went wrong
             {
-                Console.WriteLine(@"Error when getting populated handle: " + e.Message);
+                var errorMessage = string.Format("Error getting populated handle '{0}' : {1}", user.ScreenName, e.Message);
+                Console.WriteLine(errorMessage);
                 return GetInvisibleUser();
             }
 
@@ -259,7 +261,7 @@ namespace SentimentAnalysis.TwitterData
                     SpinWait.SpinUntil(() => false, 1000);
                     if(!IsTimeToScore(DateTime.Now))
                         continue;
-                    var time = @"Scored at" + DateTime.Now.ToString("G");
+                    var time = @"Scored at " + DateTime.Now.ToString("G");
                     ScoringTimes.Add(time);
                     Console.WriteLine(time);
                     scoredHandles.AddRange(ScoreHandlesFromFile(file, category));
@@ -270,7 +272,7 @@ namespace SentimentAnalysis.TwitterData
             return scoredHandles;
         }
 
-        public static List<string> ScoringTimes { get; private set; }
+
 
         private static IEnumerable<TwitterHandle> ScoreHandlesFromFile(string path, string category)
         {
