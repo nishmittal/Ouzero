@@ -19,7 +19,7 @@ namespace UnitTest
         public void ShouldGetScoredHandlesFromFileInput()
         {
             const string category = "Fitness";
-            var path = @"C:\Users\Nishant\Desktop\Dropbox\Ouzero\Fitness\";
+            var path = @"C:\Users\Nishant\Desktop\Dropbox\Ouzero\Fitness-people\";
             var files = Directory.GetFiles(path);
             var scoredHandles = TwitterDataSourcer.ScoreHandlesFromFiles(files, category);
             Utilities.WriteScoredHandlesFile(path, scoredHandles, category);

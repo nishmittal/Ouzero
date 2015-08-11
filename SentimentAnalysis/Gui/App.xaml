@@ -1,0 +1,11 @@
+﻿<Application x:Class="Gui.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+
+        <Color x:Key="NSABlue">#FF5BC0DE</Color>
+        <Color x:Key="NSAGray">#FF272B30</Color>
+
+    </Application.Resources>
+</Application>
