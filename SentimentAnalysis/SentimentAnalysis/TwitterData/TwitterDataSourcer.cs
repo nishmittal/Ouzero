@@ -6,6 +6,9 @@ using System.Threading;
 using SentimentAnalysis.Csv;
 using Tweetinvi;
 using Tweetinvi.Core.Interfaces;
+using Tweetinvi.Core.Interfaces.Credentials;
+using Tweetinvi.Core.Parameters;
+
 // ReSharper disable PossibleLossOfFraction
 
 namespace SentimentAnalysis.TwitterData
@@ -32,7 +35,12 @@ namespace SentimentAnalysis.TwitterData
             _keys.TryGetValue("AccessTokenSecret", out _accessTokenSecret);
             _keys.TryGetValue("ConsumerKey", out _consumerKey);
             _keys.TryGetValue("ConsumerSecret", out _consumerSecret);
-            TwitterCredentials.SetCredentials(_accessToken, _accessTokenSecret, _consumerKey, _consumerSecret);
+            Auth.SetApplicationOnlyCredentials(_consumerKey, _consumerSecret, true);
+        }
+
+        public static ITokenRateLimits GetRateLimits()
+        {
+            return RateLimit.GetCurrentCredentialsRateLimits();
         }
 
         public static IEnumerable<TwitterHandle> GetScoredHandlesFromUserLists(string name)
@@ -45,7 +53,7 @@ namespace SentimentAnalysis.TwitterData
 
             foreach(var tweetList in userLists)
             {
-                scoredHandles.AddRange(GetScoredHandlesFromUserList(tweetList.Slug, tweetList.Creator.ScreenName));
+                scoredHandles.AddRange(GetScoredHandlesFromUserList(tweetList.Slug, tweetList.OwnerScreenName));
             }
 
             return scoredHandles;
@@ -60,7 +68,7 @@ namespace SentimentAnalysis.TwitterData
 
         public static IEnumerable<IUser> GetUsersFromList(string listName, string listCreator)
         {
-            var tweetList = TweetList.GetExistingList(listName, listCreator);
+            var tweetList = TwitterList.GetExistingList(listName, listCreator);
             var usersInList = GetUsersInList(tweetList);
             return usersInList;
         }
@@ -100,13 +108,13 @@ namespace SentimentAnalysis.TwitterData
             return User.GetUserFromScreenName(name);
         }
 
-        private static IEnumerable<ITweetList> GetUserSubscribedLists(IUser user)
+        private static IEnumerable<ITwitterList> GetUserSubscribedLists(IUser user)
         {
-            var tweetLists = TweetList.GetUserLists(user, false);
+            var tweetLists = TwitterList.GetUserSubscribedLists(user);
             return tweetLists.ToArray();
         }
 
-        private static IEnumerable<IUser> GetUsersInList(ITweetList list)
+        private static IEnumerable<IUser> GetUsersInList(ITwitterList list)
         {
             return list.GetMembers(10000);
         }
@@ -223,10 +231,11 @@ namespace SentimentAnalysis.TwitterData
         {
             var tweets = new List<ITweet>();
 
-            var userTimelineParameter = Timeline.CreateUserTimelineRequestParameter(user);
+            var userTimelineParameter = new UserTimelineParameters();
+            userTimelineParameter.MaximumNumberOfTweetsToRetrieve = maxNumberOfTweets;
             userTimelineParameter.IncludeRTS = false;
             userTimelineParameter.MaximumNumberOfTweetsToRetrieve = maxNumberOfTweets;
-            var receivedTweets = Timeline.GetUserTimeline(userTimelineParameter).ToArray();
+            var receivedTweets = Timeline.GetUserTimeline(user, userTimelineParameter).ToArray();
 
             tweets.AddRange(receivedTweets);
 
@@ -236,7 +245,7 @@ namespace SentimentAnalysis.TwitterData
                 userTimelineParameter.MaxId = oldestTweet;
                 userTimelineParameter.MaximumNumberOfTweetsToRetrieve = 200;
 
-                receivedTweets = Timeline.GetUserTimeline(userTimelineParameter).ToArray();
+                receivedTweets = Timeline.GetUserTimeline(user, userTimelineParameter).ToArray();
                 tweets.AddRange(receivedTweets);
             }
 

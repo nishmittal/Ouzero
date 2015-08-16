@@ -16,10 +16,16 @@ namespace UnitTest
         }
 
         [TestMethod]
+        public void QueryRateLimits()
+        {
+            var rateLimits = TwitterDataSourcer.GetRateLimits();
+        }
+
+        [TestMethod]
         public void ShouldGetScoredHandlesFromFileInput()
         {
-            const string category = "Fitness";
-            var path = @"C:\Users\Nishant\Desktop\Dropbox\Ouzero\Fitness-people\";
+            const string category = "Travel";
+            var path = @"C:\Users\Nishant\Desktop\Dropbox\Ouzero\Tech-moms\";
             var files = Directory.GetFiles(path);
             var scoredHandles = TwitterDataSourcer.ScoreHandlesFromFiles(files, category);
             Utilities.WriteScoredHandlesFile(path, scoredHandles, category);
@@ -43,13 +49,33 @@ namespace UnitTest
             Utilities.WriteScoredHandlesFile(mainFolderPath, scoredHandles, category);
         }
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void ShouldCreateFilesOfHandlesFromList()
         {
-            const string creator = "ProtectCELL";
-            const string listName = "tech-moms";
-            const string category = "Tech";
+            const string creator = "verified";
+            const string listName = "world-leaders";
+            const string category = "Test";
             Utilities.SplitTwitterListIntoHandleChunks(creator, listName, category);
         }
+
+        [TestMethod]
+        public void Gash()
+        {
+            var url = "https://twitter.com/verified/lists/world-leaders";
+            var strings = url.Split('/');
+            string creator = strings[3];
+            string listName = strings[5];
+            string category = listName.Replace('-', ' ').ToUpper();
+
+        }
+
+        // read in a text file of list urls
+        // create lists from these urls
+        // get members of list and infer category from url
+        // get list of already scored handles from database
+        // if rate limit not hit then
+        // score members not existing in database periodically
+        // chuck it into database and to csv export
+        // else if rate limit hit, wait
     }
 }

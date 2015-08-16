@@ -40,7 +40,7 @@
                             <SolidColorBrush Color="{DynamicResource NSABlue}"/>
                         </Label.Foreground>
                     </Label>
-                    <TextBox x:Name="TxtDirectory_Copy1" HorizontalAlignment="Left" VerticalContentAlignment="Center" Height="26" Margin="77,65,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="256">
+                    <TextBox x:Name="TxtListName" HorizontalAlignment="Left" VerticalContentAlignment="Center" Height="26" Margin="77,65,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="256" TextChanged="TxtListName_TextChanged">
                         <TextBox.Foreground>
                             <SolidColorBrush Color="{DynamicResource NSAGray}"/>
                         </TextBox.Foreground>
@@ -50,7 +50,7 @@
                             <SolidColorBrush Color="{DynamicResource NSABlue}"/>
                         </Label.Foreground>
                     </Label>
-                    <TextBox x:Name="TxtDirectory_Copy2" HorizontalAlignment="Left" VerticalContentAlignment="Center" Height="26" Margin="77,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="256">
+                    <TextBox x:Name="TxtCategory" HorizontalAlignment="Left" VerticalContentAlignment="Center" Height="26" Margin="77,155,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="256">
                         <TextBox.Foreground>
                             <SolidColorBrush Color="{DynamicResource NSAGray}"/>
                         </TextBox.Foreground>
@@ -60,7 +60,7 @@
                             <SolidColorBrush Color="{DynamicResource NSABlue}"/>
                         </Label.Foreground>
                     </Label>
-                    <TextBox x:Name="TxtDirectory_Copy3" HorizontalAlignment="Left" VerticalContentAlignment="Center" Height="26" Margin="77,110,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="256">
+                    <TextBox x:Name="TxtCreatorName" HorizontalAlignment="Left" VerticalContentAlignment="Center" Height="26" Margin="77,110,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="256">
                         <TextBox.Foreground>
                             <SolidColorBrush Color="{DynamicResource NSAGray}"/>
                         </TextBox.Foreground>
@@ -70,18 +70,18 @@
                             <SolidColorBrush Color="{DynamicResource NSABlue}"/>
                         </Label.Foreground>
                     </Label>
-                    <TextBox x:Name="TxtDirectory_Copy4" HorizontalAlignment="Left" VerticalContentAlignment="Center" Height="26" Margin="77,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="490">
+                    <TextBox x:Name="TxtPrepDirectory" HorizontalAlignment="Left" VerticalContentAlignment="Center" Height="26" Margin="77,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="490">
                         <TextBox.Foreground>
                             <SolidColorBrush Color="{DynamicResource NSAGray}"/>
                         </TextBox.Foreground>
                     </TextBox>
-                    <Button Content="..." HorizontalAlignment="Left" Height="26" Margin="572,20,0,0" VerticalAlignment="Top" Width="25" ToolTip="Select directory to store handle files in.">
+                    <Button x:Name="BtnPrepFolderChooser" Content="..." HorizontalAlignment="Left" Height="26" Margin="572,20,0,0" VerticalAlignment="Top" Width="40" ToolTip="Select directory to store handle files in." Click="BtnPrepFileChooser_Click">
                         <Button.Background>
                             <SolidColorBrush Color="{DynamicResource NSABlue}"/>
                         </Button.Background>
                     </Button>
                     <Grid Margin="19,201,535,224"/>
-                    <Button Content="Go" HorizontalAlignment="Left" Height="41" VerticalAlignment="Top" Width="101" FontSize="20" Margin="373,140,0,0">
+                    <Button x:Name="BtnPrepGo" Content="Go" HorizontalAlignment="Left" Height="41" VerticalAlignment="Top" Width="101" FontSize="20" Margin="373,140,0,0" Click="BtnPrepGo_Click">
                         <Button.Foreground>
                             <SolidColorBrush Color="{DynamicResource NSABlue}"/>
                         </Button.Foreground>
@@ -89,6 +89,11 @@
                             <SolidColorBrush Color="{DynamicResource NSAGray}"/>
                         </Button.Background>
                     </Button>
+                    <TextBox x:Name="TxtPrepProgress" HorizontalAlignment="Left" Height="212" Margin="12,196,0,0" TextWrapping="Wrap" Text="Progress information will go here." VerticalAlignment="Top" Width="655">
+                        <TextBox.Foreground>
+                            <SolidColorBrush Color="{DynamicResource NSABlue}"/>
+                        </TextBox.Foreground>
+                    </TextBox>
                 </Grid>
             </TabItem>
             <TabItem Header="Score" Height="22" VerticalAlignment="Top">
@@ -105,27 +110,40 @@
                     <Grid.Background>
                         <SolidColorBrush Color="{DynamicResource NSAGray}"/>
                     </Grid.Background>
-                    <Label x:Name="LabelDirectory" Content="Directory" HorizontalAlignment="Left" Margin="9,13,0,0" VerticalAlignment="Top" Width="59">
+                    <TextBox x:Name="TxtScoreProgress" HorizontalAlignment="Left" Height="275" Margin="12,133,0,0" TextWrapping="Wrap" Text="Progress information will go here." VerticalAlignment="Top" Width="655">
+                        <TextBox.Foreground>
+                            <SolidColorBrush Color="{DynamicResource NSABlue}"/>
+                        </TextBox.Foreground>
+                    </TextBox>
+                    <Button x:Name="BtnScoreGo" Content="Go" HorizontalAlignment="Left" Height="41" VerticalAlignment="Top" Width="101" FontSize="20" Margin="353,54,0,0">
+                        <Button.Foreground>
+                            <SolidColorBrush Color="{DynamicResource NSABlue}"/>
+                        </Button.Foreground>
+                        <Button.Background>
+                            <SolidColorBrush Color="{DynamicResource NSAGray}"/>
+                        </Button.Background>
+                    </Button>
+                    <Label x:Name="LabelDirectory_Copy5" Content="Directory" HorizontalAlignment="Left" Margin="18,20,0,0" VerticalAlignment="Top" Width="59">
                         <Label.Foreground>
                             <SolidColorBrush Color="{DynamicResource NSABlue}"/>
                         </Label.Foreground>
                     </Label>
-                    <TextBox x:Name="TxtDirectory" HorizontalAlignment="Left" VerticalContentAlignment="Center" Height="26" Margin="71,13,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="490">
+                    <TextBox x:Name="TxtPrepDirectory_Copy" HorizontalAlignment="Left" VerticalContentAlignment="Center" Height="26" Margin="77,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="490">
                         <TextBox.Foreground>
                             <SolidColorBrush Color="{DynamicResource NSAGray}"/>
                         </TextBox.Foreground>
                     </TextBox>
-                    <Button Content="..." HorizontalAlignment="Left" Height="26" Margin="566,13,0,0" VerticalAlignment="Top" Width="56">
+                    <Button x:Name="BtnScoreFolderChooser" Content="..." HorizontalAlignment="Left" Height="26" Margin="572,20,0,0" VerticalAlignment="Top" Width="40" ToolTip="Select directory to store handle files in.">
                         <Button.Background>
                             <SolidColorBrush Color="{DynamicResource NSABlue}"/>
                         </Button.Background>
                     </Button>
-                    <Label x:Name="LabelDirectory_Copy" Content="Category" HorizontalAlignment="Left" Margin="9,64,0,0" VerticalAlignment="Top" Width="59">
+                    <Label x:Name="LabelDirectory_Copy" Content="Category" HorizontalAlignment="Left" Margin="9,65,0,0" VerticalAlignment="Top" Width="68" HorizontalContentAlignment="Right">
                         <Label.Foreground>
                             <SolidColorBrush Color="{DynamicResource NSABlue}"/>
                         </Label.Foreground>
                     </Label>
-                    <TextBox x:Name="TxtDirectory_Copy" HorizontalAlignment="Left" VerticalContentAlignment="Center" Height="26" Margin="71,64,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="256">
+                    <TextBox x:Name="TxtScoreCategory" HorizontalAlignment="Left" VerticalContentAlignment="Center" Height="26" Margin="77,65,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="256">
                         <TextBox.Foreground>
                             <SolidColorBrush Color="{DynamicResource NSAGray}"/>
                         </TextBox.Foreground>
