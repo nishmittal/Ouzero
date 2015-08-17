@@ -125,6 +125,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AssertException.cs" />
     <Compile Include="ListsScorerTests.cs" />
     <Compile Include="CsvToDatabaseInsertTests.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

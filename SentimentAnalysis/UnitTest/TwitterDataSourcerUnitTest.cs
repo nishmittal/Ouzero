@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SentimentAnalysis;
 using SentimentAnalysis.Database;
@@ -15,13 +16,13 @@ namespace UnitTest
             TwitterDataSourcer.SetCredentials();
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void QueryRateLimits()
         {
             var rateLimits = TwitterDataSourcer.GetRateLimits();
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ShouldGetScoredHandlesFromFileInput()
         {
             const string category = "Travel";
@@ -49,7 +50,7 @@ namespace UnitTest
             Utilities.WriteScoredHandlesFile(mainFolderPath, scoredHandles, category);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ShouldCreateFilesOfHandlesFromList()
         {
             const string creator = "verified";
@@ -59,15 +60,15 @@ namespace UnitTest
         }
 
         [TestMethod]
-        public void Gash()
+        public void TestGetScoredHandlesFromTwitterLists()
         {
-            var url = "https://twitter.com/verified/lists/world-leaders";
-            var strings = url.Split('/');
-            string creator = strings[3];
-            string listName = strings[5];
-            string category = listName.Replace('-', ' ').ToUpper();
-
+            var listUrls = new List<string>
+            {
+                "https://twitter.com/watchmework21/lists/fitness-6"
+            };
+            TwitterDataSourcer.GetScoredHandlesFromTwitterLists(listUrls);
         }
+
 
         // read in a text file of list urls
         // create lists from these urls

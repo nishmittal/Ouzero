@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tweetinvi.Core.Interfaces;
 using Tweetinvi.Logic;
 
 namespace SentimentAnalysis
@@ -19,6 +20,5 @@ namespace SentimentAnalysis
         }
 
         public static IList<TwitterList> TwitterLists { get; set; }
-
     }
 }

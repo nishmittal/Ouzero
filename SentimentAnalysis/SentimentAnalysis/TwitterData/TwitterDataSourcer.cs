@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using SentimentAnalysis.Csv;
+using SentimentAnalysis.Database;
 using Tweetinvi;
 using Tweetinvi.Core.Interfaces;
 using Tweetinvi.Core.Interfaces.Credentials;
@@ -35,7 +36,8 @@ namespace SentimentAnalysis.TwitterData
             _keys.TryGetValue("AccessTokenSecret", out _accessTokenSecret);
             _keys.TryGetValue("ConsumerKey", out _consumerKey);
             _keys.TryGetValue("ConsumerSecret", out _consumerSecret);
-            Auth.SetApplicationOnlyCredentials(_consumerKey, _consumerSecret, true);
+            //Auth.SetApplicationOnlyCredentials(_consumerKey, _consumerSecret, true);
+            Auth.SetUserCredentials(_consumerKey, _consumerSecret, _accessToken, _accessTokenSecret);
         }
 
         public static ITokenRateLimits GetRateLimits()
@@ -43,20 +45,29 @@ namespace SentimentAnalysis.TwitterData
             return RateLimit.GetCurrentCredentialsRateLimits();
         }
 
-        public static IEnumerable<TwitterHandle> GetScoredHandlesFromUserLists(string name)
+        public static void GetScoredHandlesFromTwitterLists(IEnumerable<string> listUrls)
         {
-            var scoredHandles = new List<TwitterHandle>();
-
-            var ouzero = new TwitterHandle(name);
-            var ouzeroUser = GetUser(ouzero.Username);
-            var userLists = GetUserSubscribedLists(ouzeroUser);
-
-            foreach(var tweetList in userLists)
+            foreach(var listUrl in listUrls)
             {
-                scoredHandles.AddRange(GetScoredHandlesFromUserList(tweetList.Slug, tweetList.OwnerScreenName));
+                ScoreTwitterList(listUrl);
             }
+        }
 
-            return scoredHandles;
+        private static void ScoreTwitterList(string listUrl)
+        {
+            var rateLimitsAtStart = GetRateLimits();
+            var strings = listUrl.Split('/');
+            var creator = strings[3];
+            var listName = strings[5];
+            var category = listName.Replace('-', ' ').ToUpper();
+            var usersInList = GetUsersFromList(listName, creator);
+            var rateLimitsAfterGettingUsers = GetRateLimits();
+            var scoredHandlesFromUsers = GetScoredHandlesFromUsers(usersInList, category);
+            var rateLimitsAfterScoringUsers = GetRateLimits();
+            var path = string.Format(@"C:\Users\Nishant\Desktop\Dropbox\Ouzero\{0}\", listName);
+            Utilities.WriteScoredHandlesFile(path, scoredHandlesFromUsers, category);
+            DatabaseConnector.BatchInsertRecords(scoredHandlesFromUsers);
+
         }
 
         public static IEnumerable<TwitterHandle> GetScoredHandlesFromUserList(string listName, string listCreator)
@@ -71,6 +82,11 @@ namespace SentimentAnalysis.TwitterData
             var tweetList = TwitterList.GetExistingList(listName, listCreator);
             var usersInList = GetUsersInList(tweetList);
             return usersInList;
+        }
+
+        private static IEnumerable<IUser> GetUsersInList(ITwitterList list)
+        {
+            return list.GetMembers(list.MemberCount);
         }
 
 
@@ -108,16 +124,6 @@ namespace SentimentAnalysis.TwitterData
             return User.GetUserFromScreenName(name);
         }
 
-        private static IEnumerable<ITwitterList> GetUserSubscribedLists(IUser user)
-        {
-            var tweetLists = TwitterList.GetUserSubscribedLists(user);
-            return tweetLists.ToArray();
-        }
-
-        private static IEnumerable<IUser> GetUsersInList(ITwitterList list)
-        {
-            return list.GetMembers(10000);
-        }
 
         private static string GetLocation(IUser user)
         {
@@ -172,7 +178,7 @@ namespace SentimentAnalysis.TwitterData
                 return GetInvisibleUser();
             }
 
-            if(tweets.Length != 500) // in case the account doesn't have the required amount
+            if(tweets.Length != numberOfTweets) // in case the account doesn't have the required amount
             {
                 if(tweets.Length == 0)
                 {
@@ -194,7 +200,7 @@ namespace SentimentAnalysis.TwitterData
             h.RetweetRate = (totalRetweets / numberOfTweets) + 1;
             h.FavouriteRate = (totalFavourites / numberOfTweets) + 1;
 
-            h.Score = ComputeScoreStatic(h);
+            h.Score = ComputeScore(h);
 
             return h;
         }
@@ -215,7 +221,7 @@ namespace SentimentAnalysis.TwitterData
         /// </summary>
         /// <param name="h"></param>
         /// <returns></returns>
-        private static double ComputeScoreStatic(TwitterHandle h)
+        private static double ComputeScore(TwitterHandle h)
         {
             var score = Math.Pow(h.RetweetRate, 2) + h.FavouriteRate + h.Friends / 100 + (h.Followers / 1000);
             return score;
@@ -258,7 +264,7 @@ namespace SentimentAnalysis.TwitterData
             _keys = File.ReadLines(path).Select(line => line.Split(',')).ToDictionary(line => line[0], line => line[1]);
         }
 
-        public static List<TwitterHandle> ScoreHandlesFromFiles(string[] files, string category)
+        public static List<TwitterHandle> ScoreHandlesFromFiles(IEnumerable<string> files, string category)
         {
             var scoredHandles = new List<TwitterHandle>();
             ScoringTimes = new List<string>();

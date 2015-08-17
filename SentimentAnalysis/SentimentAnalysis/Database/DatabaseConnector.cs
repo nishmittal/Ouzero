@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Criterion;
 using NHibernate.Exceptions;
-using NHibernate.Linq;
 using SentimentAnalysis.Entities;
 using SentimentAnalysis.TwitterData;
 
@@ -14,18 +13,22 @@ namespace SentimentAnalysis.Database
         public static void BatchInsertRecords(IEnumerable<TwitterHandle> scoredHandles)
         {
             var handles = GetScoredHandlesList(scoredHandles);
+            var insertedHandles = new List<string>();
             var session = FluentNHibernateHelper.OpenStatelessSession();
             using(session)
             {
-                var list = session.Query<ScoredHandle>().ToList();
-                Console.WriteLine(@"Records before insert: " + list.Count);
-                session.SetBatchSize(handles.Count);
+                Console.WriteLine(@"Received {0} handles for insert.", handles.Count());
+                Console.WriteLine(@"Records before insert: " + GetNumberOfRows());
 
+                session.SetBatchSize(handles.Count);
+                var inserted = 0;
                 foreach(var handle in handles)
                 {
                     try
                     {
                         session.Insert(handle);
+                        inserted++;
+                        insertedHandles.Add(handle.Username);
                     }
                     catch(GenericADOException ex)
                     {
@@ -34,8 +37,16 @@ namespace SentimentAnalysis.Database
                     }
                 }
 
-                list = session.Query<ScoredHandle>().ToList();
-                Console.WriteLine(@"Records after insert: " + list.Count);
+                Console.WriteLine(@"Inserted {0} handles.", inserted);
+                Console.WriteLine(@"Records after insert: " + GetNumberOfRows());
+
+                var handlesNotInserted = handles.Select(h => h.Username).Except(insertedHandles);
+                var notInserted = handlesNotInserted as IList<string> ?? handlesNotInserted.ToList();
+                Console.WriteLine(@"{0} handles not inserted.", notInserted.Count());
+                foreach(var h in notInserted)
+                {
+                    Console.WriteLine(h);
+                }
             }
         }
 
