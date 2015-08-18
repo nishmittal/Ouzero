@@ -4,6 +4,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SentimentAnalysis;
 using SentimentAnalysis.Database;
 using SentimentAnalysis.TwitterData;
+using Tweetinvi;
+using Tweetinvi.Core.Interfaces;
+using Tweetinvi.Core.Interfaces.Credentials;
 
 namespace UnitTest
 {
@@ -14,12 +17,6 @@ namespace UnitTest
         public void Setup()
         {
             TwitterDataSourcer.SetCredentials();
-        }
-
-        [TestMethod, Ignore]
-        public void QueryRateLimits()
-        {
-            var rateLimits = TwitterDataSourcer.GetRateLimits();
         }
 
         [TestMethod, Ignore]
@@ -38,25 +35,13 @@ namespace UnitTest
         }
 
         [TestMethod, Ignore]
-        public void ShouldGetMyScoredHandles()
-        {
-            const string creator = "nandita";
-            const string listName = "food-bloggers";
-            const string category = "Food";
-            TwitterDataSourcer.SetCredentials();
-            var scoredHandles = TwitterDataSourcer.GetScoredHandlesFromUserList(listName, creator);
-            // Write sample data to CSV file
-            var mainFolderPath = @"C:\Users\Nishant\Desktop\Dropbox\Ouzero\";
-            Utilities.WriteScoredHandlesFile(mainFolderPath, scoredHandles, category);
-        }
-
-        [TestMethod, Ignore]
         public void ShouldCreateFilesOfHandlesFromList()
         {
-            const string creator = "verified";
-            const string listName = "world-leaders";
+            const string creator = "EarthPower_D";
+            const string listName = "art";
             const string category = "Test";
-            Utilities.SplitTwitterListIntoHandleChunks(creator, listName, category);
+            var existingList = TwitterList.GetExistingList(listName, creator);
+            var x = existingList.MemberCount;
         }
 
         [TestMethod]
@@ -64,7 +49,12 @@ namespace UnitTest
         {
             var listUrls = new List<string>
             {
-                "https://twitter.com/watchmework21/lists/fitness-6"
+                "https://twitter.com/EarthPower_D/lists/art",
+                "https://twitter.com/BloombergTV/lists/autos",
+                "https://twitter.com/EarthPower_D/lists/food-wellness",
+                "https://twitter.com/EarthPower_D/lists/business",
+                "https://twitter.com/EarthPower_D/lists/lifestyle",
+                "https://twitter.com/EarthPower_D/lists/social-media"
             };
             TwitterDataSourcer.GetScoredHandlesFromTwitterLists(listUrls);
         }

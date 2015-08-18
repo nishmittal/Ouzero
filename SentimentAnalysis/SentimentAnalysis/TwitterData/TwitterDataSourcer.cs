@@ -8,6 +8,7 @@ using SentimentAnalysis.Database;
 using Tweetinvi;
 using Tweetinvi.Core.Interfaces;
 using Tweetinvi.Core.Interfaces.Credentials;
+using Tweetinvi.Core.Interfaces.Models;
 using Tweetinvi.Core.Parameters;
 
 // ReSharper disable PossibleLossOfFraction
@@ -27,6 +28,14 @@ namespace SentimentAnalysis.TwitterData
         public static readonly IList<TwitterHandle> MissingHandles = new List<TwitterHandle>();
         private static Dictionary<string, string> _keys;
         private static DateTime _lastScoreTime;
+
+        private static readonly TwitterHandle InvisibleUser = new TwitterHandle("invisible")
+        {
+            Bio = "",
+            Location = "",
+            ImgUrl = ""
+        };
+
         public static List<string> ScoringTimes { get; private set; }
 
         public static void SetCredentials()
@@ -36,13 +45,18 @@ namespace SentimentAnalysis.TwitterData
             _keys.TryGetValue("AccessTokenSecret", out _accessTokenSecret);
             _keys.TryGetValue("ConsumerKey", out _consumerKey);
             _keys.TryGetValue("ConsumerSecret", out _consumerSecret);
-            //Auth.SetApplicationOnlyCredentials(_consumerKey, _consumerSecret, true);
             Auth.SetUserCredentials(_consumerKey, _consumerSecret, _accessToken, _accessTokenSecret);
         }
 
-        public static ITokenRateLimits GetRateLimits()
+        private static void PopulateKeysDictionary()
         {
-            return RateLimit.GetCurrentCredentialsRateLimits();
+            const string path = @"C:\Users\Nishant\Documents\twitterkeys.csv";
+            _keys = File.ReadLines(path).Select(line => line.Split(',')).ToDictionary(line => line[0], line => line[1]);
+        }
+
+        private static ITokenRateLimits RateLimits
+        {
+            get { return RateLimit.GetCurrentCredentialsRateLimits(); }
         }
 
         public static void GetScoredHandlesFromTwitterLists(IEnumerable<string> listUrls)
@@ -55,31 +69,39 @@ namespace SentimentAnalysis.TwitterData
 
         private static void ScoreTwitterList(string listUrl)
         {
-            var rateLimitsAtStart = GetRateLimits();
             var strings = listUrl.Split('/');
             var creator = strings[3];
             var listName = strings[5];
             var category = listName.Replace('-', ' ').ToUpper();
             var usersInList = GetUsersFromList(listName, creator);
-            var rateLimitsAfterGettingUsers = GetRateLimits();
             var scoredHandlesFromUsers = GetScoredHandlesFromUsers(usersInList, category);
-            var rateLimitsAfterScoringUsers = GetRateLimits();
             var path = string.Format(@"C:\Users\Nishant\Desktop\Dropbox\Ouzero\{0}\", listName);
             Utilities.WriteScoredHandlesFile(path, scoredHandlesFromUsers, category);
             DatabaseConnector.BatchInsertRecords(scoredHandlesFromUsers);
-
         }
 
-        public static IEnumerable<TwitterHandle> GetScoredHandlesFromUserList(string listName, string listCreator)
+        private static void WaitToScore()
         {
-            var usersInList = GetUsersFromList(listName, listCreator);
+            while(true)
+            {
+                SpinWait.SpinUntil(() => false, 1000);
 
-            return GetScoredHandlesFromUsers(usersInList, "");
+                if(CanScore())
+                {
+                    return;
+                }
+            }
         }
 
-        public static IEnumerable<IUser> GetUsersFromList(string listName, string listCreator)
+        private static bool CanScore()
         {
-            var tweetList = TwitterList.GetExistingList(listName, listCreator);
+            return RateLimits.ListsShowLimit.Remaining > 0 && RateLimits.StatusesUserTimelineLimit.Remaining > 0;
+        }
+
+        public static IEnumerable<IUser> GetUsersFromList(string listName, string creator)
+        {
+            WaitToScore();
+            var tweetList = TwitterList.GetExistingList(listName, creator);
             var usersInList = GetUsersInList(tweetList);
             return usersInList;
         }
@@ -89,16 +111,15 @@ namespace SentimentAnalysis.TwitterData
             return list.GetMembers(list.MemberCount);
         }
 
-
         private static List<TwitterHandle> GetScoredHandlesFromUsers(IEnumerable<IUser> users, string category)
         {
             var scoredHandles = new List<TwitterHandle>();
-            foreach(var user in users)
+            foreach(var user in users.Where(user => user != null))
             {
-                if(user == null)
-                    continue;
+                WaitToScore();
 
                 var populatedHandle = GetPopulatedHandleFromUser(user, category);
+
                 if(populatedHandle.Username.StartsWith("invisible"))
                 {
                     MissingHandles.Add(new TwitterHandle(user.ScreenName));
@@ -112,7 +133,6 @@ namespace SentimentAnalysis.TwitterData
             return scoredHandles;
         }
 
-
         private static List<TwitterHandle> GetScoredHandlesFromUsernames(IEnumerable<string> usernames, string category)
         {
             var userList = usernames.Select(GetUser).ToList();
@@ -123,7 +143,6 @@ namespace SentimentAnalysis.TwitterData
         {
             return User.GetUserFromScreenName(name);
         }
-
 
         private static string GetLocation(IUser user)
         {
@@ -155,34 +174,30 @@ namespace SentimentAnalysis.TwitterData
                 Friends = user.FriendsCount,
                 Location = GetLocation(user),
                 Website = GetWebsite(user),
-                Category = category
+                Category = category,
+                Bio = TidyUpBio(GetBio(user))
             };
-
-            var desc = GetBio(user);
-            desc = desc.Replace("\r\n", " ");
-            desc = desc.Replace("\n", " ");
-            desc = desc.Replace("\r", " ");
-            h.Bio = desc;
-
+            
             var numberOfTweets = 200;
 
             ITweet[] tweets;
             try
             {
+                WaitToScore();
                 tweets = GetUserTimelineTweets(user, numberOfTweets);
             }
-            catch(Exception e) //something went wrong
+            catch(Exception e)
             {
                 var errorMessage = string.Format("Error getting populated handle '{0}' : {1}", user.ScreenName, e.Message);
                 Console.WriteLine(errorMessage);
-                return GetInvisibleUser();
+                return InvisibleUser;
             }
 
             if(tweets.Length != numberOfTweets) // in case the account doesn't have the required amount
             {
                 if(tweets.Length == 0)
                 {
-                    return GetInvisibleUser();
+                    return InvisibleUser;
                 }
                 numberOfTweets = tweets.Length;
             }
@@ -205,15 +220,12 @@ namespace SentimentAnalysis.TwitterData
             return h;
         }
 
-        private static TwitterHandle GetInvisibleUser()
+        private static string TidyUpBio(string desc)
         {
-            var t = new TwitterHandle("invisible")
-            {
-                Bio = "",
-                Location = "",
-                ImgUrl = ""
-            };
-            return t;
+            desc = desc.Replace("\r\n", " ");
+            desc = desc.Replace("\n", " ");
+            desc = desc.Replace("\r", " ");
+            return desc;
         }
 
         /// <summary>
@@ -233,13 +245,15 @@ namespace SentimentAnalysis.TwitterData
         /// <param name="user"></param>
         /// <param name="maxNumberOfTweets"></param>
         /// <returns></returns>
-        private static ITweet[] GetUserTimelineTweets(IUser user, int maxNumberOfTweets)
+        private static ITweet[] GetUserTimelineTweets(IUserIdentifier user, int maxNumberOfTweets = 200)
         {
             var tweets = new List<ITweet>();
 
-            var userTimelineParameter = new UserTimelineParameters();
-            userTimelineParameter.MaximumNumberOfTweetsToRetrieve = maxNumberOfTweets;
-            userTimelineParameter.IncludeRTS = false;
+            var userTimelineParameter = new UserTimelineParameters
+            {
+                MaximumNumberOfTweetsToRetrieve = maxNumberOfTweets,
+                IncludeRTS = false
+            };
             userTimelineParameter.MaximumNumberOfTweetsToRetrieve = maxNumberOfTweets;
             var receivedTweets = Timeline.GetUserTimeline(user, userTimelineParameter).ToArray();
 
@@ -256,12 +270,6 @@ namespace SentimentAnalysis.TwitterData
             }
 
             return tweets.Distinct().ToArray();
-        }
-
-        private static void PopulateKeysDictionary()
-        {
-            const string path = @"C:\Users\Nishant\Documents\twitterkeys.csv";
-            _keys = File.ReadLines(path).Select(line => line.Split(',')).ToDictionary(line => line[0], line => line[1]);
         }
 
         public static List<TwitterHandle> ScoreHandlesFromFiles(IEnumerable<string> files, string category)
@@ -286,8 +294,6 @@ namespace SentimentAnalysis.TwitterData
 
             return scoredHandles;
         }
-
-
 
         private static IEnumerable<TwitterHandle> ScoreHandlesFromFile(string path, string category)
         {
